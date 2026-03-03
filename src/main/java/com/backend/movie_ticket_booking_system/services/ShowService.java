@@ -33,18 +33,16 @@ public class ShowService {
 
     @Autowired
     private ShowRepository showRepository;
-@SuppressWarnings("unused")
+
     public String addShow(ShowRequest showRequest) {
         Show show = ShowConvertor.showDtoToShow(showRequest);
 
         Optional<Movie> movieOpt = movieRepository.findById(showRequest.getMovieId());
-
         if (movieOpt.isEmpty()) {
             throw new MovieDoesNotExist();
         }
 
         Optional<Theater> theaterOpt = theaterRepository.findById(showRequest.getTheaterId());
-
         if (theaterOpt.isEmpty()) {
             throw new TheaterDoesNotExist();
         }
@@ -64,10 +62,9 @@ public class ShowService {
 
         return "Show has been added Successfully";
     }
-    @SuppressWarnings("unused")
-    public String associateShowSeats(ShowSeatRequest showSeatRequest) throws ShowDoesNotExist {
-        Optional<Show> showOpt = showRepository.findById(showSeatRequest.getShowId());
 
+    public String associateShowSeats(ShowSeatRequest showSeatRequest) {
+        Optional<Show> showOpt = showRepository.findById(showSeatRequest.getShowId());
         if (showOpt.isEmpty()) {
             throw new ShowDoesNotExist();
         }
@@ -76,7 +73,6 @@ public class ShowService {
         Theater theater = show.getTheater();
 
         List<TheaterSeat> theaterSeatList = theater.getTheaterSeatList();
-
         List<ShowSeat> showSeatList = show.getShowSeatList();
 
         for (TheaterSeat theaterSeat : theaterSeatList) {
@@ -85,7 +81,7 @@ public class ShowService {
             showSeat.setSeatType(theaterSeat.getSeatType());
 
             if (showSeat.getSeatType().equals(SeatType.CLASSIC)) {
-                showSeat.setPrice((showSeatRequest.getPriceOfClassicSeat()));
+                showSeat.setPrice(showSeatRequest.getPriceOfClassicSeat());
             } else {
                 showSeat.setPrice(showSeatRequest.getPriceOfPremiumSeat());
             }
@@ -98,18 +94,12 @@ public class ShowService {
         }
 
         showRepository.save(show);
-
         return "Show seats have been associated successfully";
     }
 
     public Show getShowById(Integer showId) {
-        Optional<Show> showOpt = showRepository.findById(showId);
-
-        if (showOpt.isEmpty()) {
-            throw new ShowDoesNotExist();
-        }
-
-        return showOpt.get();
+        return showRepository.findById(showId)
+                .orElseThrow(ShowDoesNotExist::new);
     }
 
     public List<Show> getAllShows() {
@@ -117,43 +107,31 @@ public class ShowService {
     }
 
     public List<Show> getAllShowsOfMovie(Integer movieId) {
-        Optional<Movie> movieOpt = movieRepository.findById(movieId);
-
-        if (movieOpt.isEmpty()) {
+        if (movieRepository.findById(movieId).isEmpty()) {
             throw new MovieDoesNotExist();
         }
-
         return showRepository.getAllShowsOfMovie(movieId);
     }
 
     public String updateShow(Integer showId, ShowRequest showRequest) {
-        Optional<Show> showOpt = showRepository.findById(showId);
+        Show show = showRepository.findById(showId)
+                .orElseThrow(ShowDoesNotExist::new);
 
-        if (showOpt.isEmpty()) {
-            throw new ShowDoesNotExist();
+        if (showRequest.getShowStartTime() != null) {
+            show.setTime(showRequest.getShowStartTime());
         }
-
-        Show show = showOpt.get();
-
-        if (showRequest.getTime() != null) {
-            show.setTime(showRequest.getTime());
-        }
-        if (showRequest.getDate() != null) {
-            show.setDate(showRequest.getDate());
+        if (showRequest.getShowDate() != null) {
+            show.setDate(showRequest.getShowDate());
         }
         if (showRequest.getMovieId() != null) {
-            Optional<Movie> movieOpt = movieRepository.findById(showRequest.getMovieId());
-            if (movieOpt.isEmpty()) {
-                throw new MovieDoesNotExist();
-            }
-            show.setMovie(movieOpt.get());
+            Movie movie = movieRepository.findById(showRequest.getMovieId())
+                    .orElseThrow(MovieDoesNotExist::new);
+            show.setMovie(movie);
         }
         if (showRequest.getTheaterId() != null) {
-            Optional<Theater> theaterOpt = theaterRepository.findById(showRequest.getTheaterId());
-            if (theaterOpt.isEmpty()) {
-                throw new TheaterDoesNotExist();
-            }
-            show.setTheater(theaterOpt.get());
+            Theater theater = theaterRepository.findById(showRequest.getTheaterId())
+                    .orElseThrow(TheaterDoesNotExist::new);
+            show.setTheater(theater);
         }
 
         showRepository.save(show);
@@ -161,12 +139,9 @@ public class ShowService {
     }
 
     public String deleteShow(Integer showId) {
-        Optional<Show> showOpt = showRepository.findById(showId);
-
-        if (showOpt.isEmpty()) {
+        if (showRepository.findById(showId).isEmpty()) {
             throw new ShowDoesNotExist();
         }
-
         showRepository.deleteById(showId);
         return "Show deleted successfully";
     }
