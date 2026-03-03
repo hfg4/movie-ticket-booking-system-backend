@@ -1,4 +1,4 @@
-package com.backend.movie_ticket_booking_system.controllers;
+package com.backend.movie_ticket_booking_system.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

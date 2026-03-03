@@ -1,6 +1,5 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.backend.movie_ticket_booking_system.config.JWTService;
 import com.backend.movie_ticket_booking_system.entities.User;
+import com.backend.movie_ticket_booking_system.request.AuthRequest;
 import com.backend.movie_ticket_booking_system.request.UserRequest;
 import com.backend.movie_ticket_booking_system.services.UserService;
 
@@ -21,84 +21,56 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JWTService jwtService;
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JWTService jwtService) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/addNew")
     public ResponseEntity<String> addNewUser(@Valid @RequestBody UserRequest userEntryDto) {
-        try {
-            String result = userService.addUser(userEntryDto);
-            return new ResponseEntity<>(result, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(userEntryDto));
     }
 
     @PostMapping("/getToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(jwtService.generateToken(authRequest.getUsername()));
         }
 
-        throw new UsernameNotFoundException("invalid user details.");
+        throw new UsernameNotFoundException("Invalid user credentials.");
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
-        try {
-            User user = userService.getUserById(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/email/{emailId}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String emailId) {
-        try {
-            User user = userService.getUserByEmail(emailId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(userService.getUserByEmail(emailId));
     }
 
     @PutMapping("/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable Integer userId, @Valid @RequestBody UserRequest userRequest) {
-        try {
-            String result = userService.updateUser(userId, userRequest);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(userService.updateUser(userId, userRequest));
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
-        try {
-            String result = userService.deleteUser(userId);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(userService.deleteUser(userId));
     }
+
 }

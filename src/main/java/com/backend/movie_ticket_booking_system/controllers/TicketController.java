@@ -1,13 +1,11 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.backend.movie_ticket_booking_system.entities.Ticket;
 import com.backend.movie_ticket_booking_system.request.TicketRequest;
-import com.backend.movie_ticket_booking_system.response.TicketResponse;
 import com.backend.movie_ticket_booking_system.services.TicketService;
 
 import java.util.List;
@@ -16,56 +14,34 @@ import java.util.List;
 @RequestMapping("/ticket")
 public class TicketController {
 
-    @Autowired
-    private TicketService ticketService;
+    private final TicketService ticketService;
+
+    public TicketController(TicketService ticketService) {
+        this.ticketService = ticketService;
+    }
 
     @PostMapping("/book")
     public ResponseEntity<Object> ticketBooking(@RequestBody TicketRequest ticketRequest) {
-        try {
-            TicketResponse result = ticketService.ticketBooking(ticketRequest);
-            return new ResponseEntity<>(result, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.ticketBooking(ticketRequest)); // ✅ instance call, added semicolon
     }
 
     @GetMapping("/{ticketId}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Integer ticketId) {
-        try {
-            Ticket ticket = ticketService.getTicketById(ticketId);
-            return new ResponseEntity<>(ticket, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(ticketService.getTicketById(ticketId));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Ticket>> getAllTickets() {
-        try {
-            List<Ticket> tickets = ticketService.getAllTickets();
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Ticket>> getTicketsByUserId(@PathVariable Integer userId) {
-        try {
-            List<Ticket> tickets = ticketService.getTicketsByUserId(userId);
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(ticketService.getTicketsByUserId(userId));
     }
 
     @DeleteMapping("/cancel/{ticketId}")
     public ResponseEntity<String> cancelTicket(@PathVariable Integer ticketId) {
-        try {
-            String result = ticketService.cancelTicket(ticketId);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(ticketService.cancelTicket(ticketId));
     }
 }
