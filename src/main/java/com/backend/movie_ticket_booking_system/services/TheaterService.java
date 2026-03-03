@@ -7,6 +7,7 @@ import com.backend.movie_ticket_booking_system.convertor.TheaterConvertor;
 import com.backend.movie_ticket_booking_system.entities.Theater;
 import com.backend.movie_ticket_booking_system.entities.TheaterSeat;
 import com.backend.movie_ticket_booking_system.enums.SeatType;
+import com.backend.movie_ticket_booking_system.exceptions.TheaterDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.TheaterIsExist;
 import com.backend.movie_ticket_booking_system.exceptions.TheaterIsNotExist;
 import com.backend.movie_ticket_booking_system.repositories.TheaterRepository;
@@ -14,6 +15,7 @@ import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TheaterService {
@@ -89,5 +91,64 @@ public class TheaterService {
         theaterRepository.save(theater);
 
         return "Theater Seats have been added successfully";
+    }
+
+    public Theater getTheaterById(Integer theaterId) {
+        Optional<Theater> theaterOpt = theaterRepository.findById(theaterId);
+
+        if (theaterOpt.isEmpty()) {
+            throw new TheaterDoesNotExist();
+        }
+
+        return theaterOpt.get();
+    }
+
+    public List<Theater> getAllTheaters() {
+        return theaterRepository.findAll();
+    }
+
+    public Theater getTheaterByAddress(String address) {
+        Theater theater = theaterRepository.findByAddress(address);
+
+        if (theater == null) {
+            throw new TheaterDoesNotExist();
+        }
+
+        return theater;
+    }
+
+    public String updateTheater(Integer theaterId, TheaterRequest theaterRequest) {
+        Optional<Theater> theaterOpt = theaterRepository.findById(theaterId);
+
+        if (theaterOpt.isEmpty()) {
+            throw new TheaterDoesNotExist();
+        }
+
+        Theater theater = theaterOpt.get();
+
+        if (theaterRequest.getName() != null) {
+            theater.setName(theaterRequest.getName());
+        }
+        if (theaterRequest.getAddress() != null) {
+            Theater existingTheater = theaterRepository.findByAddress(theaterRequest.getAddress());
+            if (existingTheater != null && !existingTheater.getId().equals(theaterId)) {
+                throw new TheaterIsExist();
+            }
+            theater.setAddress(theaterRequest.getAddress());
+        }
+
+        theaterRepository.save(theater);
+        return "Theater updated successfully";
+    }
+
+    public String deleteTheater(Integer theaterId) {
+        Optional<Theater> theaterOpt = theaterRepository.findById(theaterId);
+
+        if (theaterOpt.isEmpty()) {
+            throw new TheaterDoesNotExist();
+        }
+
+        theaterRepository.deleteById(theaterId);
+        return "Theater deleted successfully";
     }
 }

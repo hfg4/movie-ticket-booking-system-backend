@@ -1,6 +1,7 @@
 package com.backend.movie_ticket_booking_system.entities;
 
 import com.backend.movie_ticket_booking_system.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -45,6 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<Ticket> ticketList = new ArrayList<>();
 
     @Override

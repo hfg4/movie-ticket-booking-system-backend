@@ -101,4 +101,73 @@ public class ShowService {
 
         return "Show seats have been associated successfully";
     }
+
+    public Show getShowById(Integer showId) {
+        Optional<Show> showOpt = showRepository.findById(showId);
+
+        if (showOpt.isEmpty()) {
+            throw new ShowDoesNotExist();
+        }
+
+        return showOpt.get();
+    }
+
+    public List<Show> getAllShows() {
+        return showRepository.findAll();
+    }
+
+    public List<Show> getAllShowsOfMovie(Integer movieId) {
+        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+
+        if (movieOpt.isEmpty()) {
+            throw new MovieDoesNotExist();
+        }
+
+        return showRepository.getAllShowsOfMovie(movieId);
+    }
+
+    public String updateShow(Integer showId, ShowRequest showRequest) {
+        Optional<Show> showOpt = showRepository.findById(showId);
+
+        if (showOpt.isEmpty()) {
+            throw new ShowDoesNotExist();
+        }
+
+        Show show = showOpt.get();
+
+        if (showRequest.getTime() != null) {
+            show.setTime(showRequest.getTime());
+        }
+        if (showRequest.getDate() != null) {
+            show.setDate(showRequest.getDate());
+        }
+        if (showRequest.getMovieId() != null) {
+            Optional<Movie> movieOpt = movieRepository.findById(showRequest.getMovieId());
+            if (movieOpt.isEmpty()) {
+                throw new MovieDoesNotExist();
+            }
+            show.setMovie(movieOpt.get());
+        }
+        if (showRequest.getTheaterId() != null) {
+            Optional<Theater> theaterOpt = theaterRepository.findById(showRequest.getTheaterId());
+            if (theaterOpt.isEmpty()) {
+                throw new TheaterDoesNotExist();
+            }
+            show.setTheater(theaterOpt.get());
+        }
+
+        showRepository.save(show);
+        return "Show updated successfully";
+    }
+
+    public String deleteShow(Integer showId) {
+        Optional<Show> showOpt = showRepository.findById(showId);
+
+        if (showOpt.isEmpty()) {
+            throw new ShowDoesNotExist();
+        }
+
+        showRepository.deleteById(showId);
+        return "Show deleted successfully";
+    }
 }

@@ -1,5 +1,6 @@
 package com.backend.movie_ticket_booking_system.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -30,11 +31,13 @@ public class Theater {
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<TheaterSeat> theaterSeatList = new ArrayList<>();
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<Show> showList = new ArrayList<>();
 
     @Override

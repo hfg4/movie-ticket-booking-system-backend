@@ -2,6 +2,7 @@ package com.backend.movie_ticket_booking_system.entities;
 
 import com.backend.movie_ticket_booking_system.enums.Genre;
 import com.backend.movie_ticket_booking_system.enums.Language;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -44,6 +45,7 @@ public class Movie {
     @OneToMany(mappedBy = "movie",cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<Show> shows = new ArrayList<>();
 
     @Override
