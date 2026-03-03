@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.movie_ticket_booking_system.convertor.TicketConvertor;
 import com.backend.movie_ticket_booking_system.entities.Show;
@@ -13,12 +14,15 @@ import com.backend.movie_ticket_booking_system.entities.Ticket;
 import com.backend.movie_ticket_booking_system.entities.User;
 import com.backend.movie_ticket_booking_system.exceptions.SeatNotAvailable;
 import com.backend.movie_ticket_booking_system.exceptions.ShowDoesNotExist;
+import com.backend.movie_ticket_booking_system.exceptions.TicketDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.UserDoesNotExist;
 import com.backend.movie_ticket_booking_system.repositories.ShowRepository;
 import com.backend.movie_ticket_booking_system.repositories.TicketRepository;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.TicketRequest;
 import com.backend.movie_ticket_booking_system.response.TicketResponse;
+
+import java.util.Arrays;
 
 @Service
 public class TicketService {
@@ -32,6 +36,7 @@ public class TicketService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     @SuppressWarnings("unused")
     public TicketResponse ticketBooking(TicketRequest ticketRequest) {
         Optional<Show> showOpt = showRepository.findById(ticketRequest.getShowId());
@@ -104,11 +109,64 @@ public class TicketService {
     private String listToString(List<String> requestSeats) {
         StringBuilder sb = new StringBuilder();
 
-        for (String s : requestSeats) {
-            sb.append(s).append(",");
+        for (int i = 0; i < requestSeats.size(); i++) {
+            sb.append(requestSeats.get(i));
+            if (i < requestSeats.size() - 1) {
+                sb.append(",");
+            }
         }
 
         return sb.toString();
+    }
+
+    public Ticket getTicketById(Integer ticketId) {
+        Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
+
+        if (ticketOpt.isEmpty()) {
+            throw new TicketDoesNotExist();
+        }
+
+        return ticketOpt.get();
+    }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    public List<Ticket> getTicketsByUserId(Integer userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+
+        return userOpt.get().getTicketList();
+    }
+
+    @Transactional
+    public String cancelTicket(Integer ticketId) {
+        Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
+
+        if (ticketOpt.isEmpty()) {
+            throw new TicketDoesNotExist();
+        }
+
+        Ticket ticket = ticketOpt.get();
+        Show show = ticket.getShow();
+
+        String bookedSeats = ticket.getBookedSeats();
+        List<String> seatsList = Arrays.asList(bookedSeats.split(","));
+
+        for (ShowSeat showSeat : show.getShowSeatList()) {
+            if (seatsList.contains(showSeat.getSeatNo())) {
+                showSeat.setIsAvailable(Boolean.TRUE);
+            }
+        }
+
+        showRepository.save(show);
+        ticketRepository.deleteById(ticketId);
+
+        return "Ticket cancelled successfully";
     }
 
 }
