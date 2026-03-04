@@ -28,4 +28,7 @@ public class MovieRequest {
 
     @NotNull(message = "Language is required")
     private Language language;
+
+    private String description;
+    private String movieImage;
 }

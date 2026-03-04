@@ -1,5 +1,6 @@
 package com.backend.movie_ticket_booking_system.services;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,17 @@ public class MovieService {
 
         movieRepository.save(movie);
         return "The movie has been added successfully";
+    }
+
+    public String addMovieImage(String movieImage, @Valid MovieRequest movieId) {
+        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+        if (movieOpt.isEmpty()) {
+            throw new MovieDoesNotExist();
+        }
+        Movie movie = movieOpt.get();
+        movie.setMovieImage(movieImage);
+        movieRepository.save(movie);
+        return "The movie image has been added successfully";
     }
 
     public Movie getMovieById(Integer movieId) {
@@ -82,6 +94,12 @@ public class MovieService {
         }
         if (movieRequest.getLanguage() != null) {
             movie.setLanguage(movieRequest.getLanguage());
+        }
+        if (movieRequest.getDescription() != null) {
+            movie.setDescription(movieRequest.getDescription());
+        }
+        if(movieRequest.getMovieImage() != null){
+            movie.setMovieImage(movieRequest.getMovieImage());
         }
 
         movieRepository.save(movie);

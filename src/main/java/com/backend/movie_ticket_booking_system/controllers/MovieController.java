@@ -26,6 +26,11 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovie(movieRequest));
     }
 
+    @PostMapping("/addNew/{movieImage}")
+    public ResponseEntity<String> addMovieWithImage(@PathVariable String movieImage, @Valid @RequestBody MovieRequest movieRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovieImage(movieImage, movieRequest));
+    }
+
     @GetMapping("/{movieId}")
     public ResponseEntity<Movie> getMovieById(@PathVariable Integer movieId) {
         return ResponseEntity.ok(movieService.getMovieById(movieId));
