@@ -15,5 +15,10 @@ server:
   port: 8080
 jwt:
   secret: ${JWT_SECRET:0D4MZtm70C8HVYCVCBvGwat7LYec66C2I87Y+YyBZHg=}
+  expiration: 3600000
+cloudinary:
+  cloud_name: ${CLOUD_NAME:dul9q7k8g}
+  api_key: ${API_KEY:372722121212222}
+  api_secret: ${API_SECRET:372722121212222}
 
 

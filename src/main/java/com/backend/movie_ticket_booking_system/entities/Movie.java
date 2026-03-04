@@ -48,6 +48,9 @@ public class Movie {
     @JsonIgnore
     private List<Show> shows = new ArrayList<>();
 
+    private String description;
+    private String movieImage;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

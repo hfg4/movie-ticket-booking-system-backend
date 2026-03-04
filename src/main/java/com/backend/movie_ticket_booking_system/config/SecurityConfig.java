@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfiguration {
+public class SecurityConfig {
 
     private final JwtAuthFilter authFilter;
     private final UserInfoUserDetailsService userDetailsService;
@@ -31,6 +31,11 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()                              // ✅ Swagger whitelisted
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/show/**").hasAuthority("ROLE_ADMIN")
