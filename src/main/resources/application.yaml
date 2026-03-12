@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD:hunganh250}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -20,5 +20,3 @@ cloudinary:
   cloud_name: ${CLOUD_NAME:dul9q7k8g}
   api_key: ${API_KEY:372722121212222}
   api_secret: ${API_SECRET:372722121212222}
-
-
