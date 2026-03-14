@@ -33,15 +33,18 @@ public class MovieService {
         return "The movie has been added successfully";
     }
 
-    public String addMovieImage(String movieImage, @Valid MovieRequest movieId) {
-        Optional<Movie> movieOpt = movieRepository.findById(movieId);
-        if (movieOpt.isEmpty()) {
-            throw new MovieDoesNotExist();
+    public String addMovieImage(String movieImage, @Valid MovieRequest movieRequest) {
+        Movie movieByName = movieRepository.findByMovieName(movieRequest.getMovieName());
+
+        if (movieByName != null && movieByName.getLanguage().equals(movieRequest.getLanguage())) {
+            throw new MovieAlreadyExist();
         }
-        Movie movie = movieOpt.get();
+
+        Movie movie = MovieConvertor.movieDtoToMovie(movieRequest);
         movie.setMovieImage(movieImage);
+
         movieRepository.save(movie);
-        return "The movie image has been added successfully";
+        return "The movie and image have been added successfully";
     }
 
     public Movie getMovieById(Integer movieId) {

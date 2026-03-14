@@ -24,6 +24,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException e) {
+        String errors = e.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getDefaultMessage())
+                .collect(java.util.stream.Collectors.joining(", "));
+        log.warn("Validation error: {}", errors);
+        if (errors.isEmpty() && e.getGlobalErrorCount() > 0) {
+            errors = e.getBindingResult().getGlobalErrors().get(0).getDefaultMessage();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+        log.warn("Domain exception: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneric(Exception e) {
         log.error("Unexpected error: ", e);
