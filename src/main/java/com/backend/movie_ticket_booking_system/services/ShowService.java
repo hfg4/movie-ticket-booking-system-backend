@@ -145,4 +145,27 @@ public class ShowService {
         showRepository.deleteById(showId);
         return "Show deleted successfully";
     }
+
+    public String updateShowSeats(Integer showId, List<ShowSeat> updatedSeats) {
+        Optional<Show> showOpt = showRepository.findById(showId);
+        if (showOpt.isEmpty()) {
+            throw new ShowDoesNotExist();
+        }
+
+        Show show = showOpt.get();
+        List<ShowSeat> currentSeats = show.getShowSeatList();
+
+        for (ShowSeat updatedSeat : updatedSeats) {
+            for (ShowSeat currentSeat : currentSeats) {
+                if (currentSeat.getSeatNo().equals(updatedSeat.getSeatNo())) {
+                    currentSeat.setSeatType(updatedSeat.getSeatType());
+                    currentSeat.setPrice(updatedSeat.getPrice());
+                    break;
+                }
+            }
+        }
+
+        showRepository.save(show);
+        return "Show seats updated successfully";
+    }
 }

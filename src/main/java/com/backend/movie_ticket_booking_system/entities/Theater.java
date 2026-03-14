@@ -31,7 +31,6 @@ public class Theater {
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
-    @JsonIgnore
     private List<TheaterSeat> theaterSeatList = new ArrayList<>();
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)

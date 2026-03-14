@@ -151,4 +151,25 @@ public class TheaterService {
         theaterRepository.deleteById(theaterId);
         return "Theater deleted successfully";
     }
+    public String updateTheaterSeats(Integer theaterId, List<TheaterSeat> updatedSeats) {
+        Optional<Theater> theaterOpt = theaterRepository.findById(theaterId);
+        if (theaterOpt.isEmpty()) {
+            throw new TheaterDoesNotExist();
+        }
+
+        Theater theater = theaterOpt.get();
+        List<TheaterSeat> currentSeats = theater.getTheaterSeatList();
+
+        for (TheaterSeat updatedSeat : updatedSeats) {
+            for (TheaterSeat currentSeat : currentSeats) {
+                if (currentSeat.getSeatNo().equals(updatedSeat.getSeatNo())) {
+                    currentSeat.setSeatType(updatedSeat.getSeatType());
+                    break;
+                }
+            }
+        }
+
+        theaterRepository.save(theater);
+        return "Theater seats updated successfully";
+    }
 }

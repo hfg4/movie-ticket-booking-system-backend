@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.backend.movie_ticket_booking_system.entities.Theater;
+import com.backend.movie_ticket_booking_system.entities.TheaterSeat;
 import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
 import com.backend.movie_ticket_booking_system.services.TheaterService;
@@ -54,5 +55,11 @@ public class TheaterController {
     @DeleteMapping("/{theaterId}")
     public ResponseEntity<String> deleteTheater(@PathVariable Integer theaterId) {
         return ResponseEntity.ok(theaterService.deleteTheater(theaterId));
+    }
+
+    @PutMapping("/{theaterId}/seats")
+    public ResponseEntity<List<TheaterSeat>> updateTheaterSeats(@PathVariable Integer theaterId, @RequestBody List<TheaterSeat> updatedSeats) {
+        theaterService.updateTheaterSeats(theaterId, updatedSeats);
+        return ResponseEntity.ok(theaterService.getTheaterById(theaterId).getTheaterSeatList());
     }
 }
