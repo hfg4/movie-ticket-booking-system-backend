@@ -1,6 +1,5 @@
 package com.backend.movie_ticket_booking_system.entities;
 
-import com.backend.movie_ticket_booking_system.enums.SeatType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
