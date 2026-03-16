@@ -1,13 +1,12 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.backend.movie_ticket_booking_system.entities.Theater;
 import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
 import com.backend.movie_ticket_booking_system.services.TheaterService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class TheaterController {
 
     @PostMapping("/addTheaterSeat")
     public ResponseEntity<String> addTheaterSeat(@RequestBody TheaterSeatRequest entryDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheaterSeat(entryDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheaterSeats(entryDto));
     }
 
     @GetMapping("/{theaterId}")

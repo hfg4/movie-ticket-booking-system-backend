@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui/index.html"
                         ).permitAll()                              // ✅ Swagger whitelisted
                         .requestMatchers("/user/**", "/movie/all", "/movie/name/**", "/theater/all", "/show/all", "/show/movie/**").permitAll()
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
