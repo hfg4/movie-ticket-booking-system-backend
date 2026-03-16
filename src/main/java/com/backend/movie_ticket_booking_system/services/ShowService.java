@@ -1,17 +1,7 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.backend.movie_ticket_booking_system.convertor.ShowConvertor;
-import com.backend.movie_ticket_booking_system.entities.Movie;
-import com.backend.movie_ticket_booking_system.entities.Show;
-import com.backend.movie_ticket_booking_system.entities.ShowSeat;
-import com.backend.movie_ticket_booking_system.entities.Theater;
-import com.backend.movie_ticket_booking_system.entities.TheaterSeat;
+import com.backend.movie_ticket_booking_system.entities.*;
 import com.backend.movie_ticket_booking_system.enums.SeatType;
 import com.backend.movie_ticket_booking_system.exceptions.MovieDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.ShowDoesNotExist;
@@ -21,6 +11,11 @@ import com.backend.movie_ticket_booking_system.repositories.ShowRepository;
 import com.backend.movie_ticket_booking_system.repositories.TheaterRepository;
 import com.backend.movie_ticket_booking_system.request.ShowRequest;
 import com.backend.movie_ticket_booking_system.request.ShowSeatRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShowService {
@@ -77,18 +72,16 @@ public class ShowService {
 
         for (TheaterSeat theaterSeat : theaterSeatList) {
             ShowSeat showSeat = new ShowSeat();
-            showSeat.setSeatNo(theaterSeat.getSeatNo());
-            showSeat.setSeatType(theaterSeat.getSeatType());
+            showSeat.setTheaterSeat(theaterSeat);
 
-            if (showSeat.getSeatType().equals(SeatType.CLASSIC)) {
-                showSeat.setPrice(showSeatRequest.getPriceOfClassicSeat());
+            if (theaterSeat.getSeatType().equals(SeatType.STANDARD)) {
+                showSeat.setPrice((double) showSeatRequest.getPriceOfClassicSeat());
             } else {
-                showSeat.setPrice(showSeatRequest.getPriceOfPremiumSeat());
+                showSeat.setPrice((double) showSeatRequest.getPriceOfPremiumSeat());
             }
 
             showSeat.setShow(show);
-            showSeat.setIsAvailable(Boolean.TRUE);
-            showSeat.setIsFoodContains(Boolean.FALSE);
+            showSeat.setIsFoodIncluded(Boolean.FALSE);
 
             showSeatList.add(showSeat);
         }
@@ -118,10 +111,10 @@ public class ShowService {
                 .orElseThrow(ShowDoesNotExist::new);
 
         if (showRequest.getShowStartTime() != null) {
-            show.setTime(showRequest.getShowStartTime());
+            show.setShowTime(showRequest.getShowStartTime());
         }
         if (showRequest.getShowDate() != null) {
-            show.setDate(showRequest.getShowDate());
+            show.setShowDate(showRequest.getShowDate());
         }
         if (showRequest.getMovieId() != null) {
             Movie movie = movieRepository.findById(showRequest.getMovieId())

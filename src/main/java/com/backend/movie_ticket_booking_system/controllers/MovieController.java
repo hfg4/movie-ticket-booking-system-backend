@@ -1,14 +1,14 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
+import com.backend.movie_ticket_booking_system.entities.Movie;
+import com.backend.movie_ticket_booking_system.request.MovieRequest;
+import com.backend.movie_ticket_booking_system.services.MovieService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.backend.movie_ticket_booking_system.entities.Movie;
-import com.backend.movie_ticket_booking_system.request.MovieRequest;
-import com.backend.movie_ticket_booking_system.services.MovieService;
-
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,8 +37,21 @@ public class MovieController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Movie>> getAllMovies() {
-        return ResponseEntity.ok(movieService.getAllMovies());
+    public ResponseEntity<List<Movie>> getAllMovies(
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+    ) {
+        return ResponseEntity.ok(movieService.getAllMovies(sortBy, sortDir));
+    }
+
+    @GetMapping("/all/paginated")
+    public ResponseEntity<Page<Movie>> getAllMoviesPaginated(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+    ) {
+        return ResponseEntity.ok(movieService.getAllMovies(pageNo, pageSize, sortBy, sortDir));
     }
 
     @GetMapping("/name/{movieName}")
