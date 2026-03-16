@@ -133,7 +133,7 @@ public class SecurityConfig {
         // Allow all headers
         configuration.setAllowedHeaders(List.of("*"));
 
-        // Expose specific headers to client
+        // Expose specific headers
         configuration.setExposedHeaders(List.of(
                 "Authorization",
                 "Content-Type",
