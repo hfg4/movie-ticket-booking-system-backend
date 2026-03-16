@@ -30,8 +30,8 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/addNew")
-    public ResponseEntity<String> addNewUser(@Valid @RequestBody UserRequest userEntryDto) {
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequest userEntryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(userEntryDto));
     }
 
