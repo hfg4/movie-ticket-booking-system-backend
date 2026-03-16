@@ -18,7 +18,7 @@ public class UserConvertor {
                 .address(userRequest.getAddress())
                 .gender(userRequest.getGender())
                 .mobileNo(userRequest.getMobileNo())
-                .emailId(userRequest.getEmailId())
+                .email(userRequest.getEmail())
                 .roles(Arrays.stream(userRequest.getRoles().split(","))
                         .map(String::trim)
                         .map(Role::valueOf)
