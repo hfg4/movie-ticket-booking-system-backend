@@ -31,7 +31,7 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET:}
-  expiration: 3600000
+  expiration: 86400000
 cloudinary:
   cloud_name: ${CLOUD_NAME:}
   api_key: ${API_KEY:}
