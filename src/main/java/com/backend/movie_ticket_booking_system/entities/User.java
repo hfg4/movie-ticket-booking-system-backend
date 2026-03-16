@@ -10,11 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "USERS")
@@ -42,7 +38,7 @@ public class User {
 
     private String mobileNo;
 
-    private String emailId;
+    private String email;
 
     private String password;
 
