@@ -1,5 +1,11 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
+import com.backend.movie_ticket_booking_system.config.JWTService;
+import com.backend.movie_ticket_booking_system.entities.User;
+import com.backend.movie_ticket_booking_system.request.AuthRequest;
+import com.backend.movie_ticket_booking_system.request.UserRequest;
+import com.backend.movie_ticket_booking_system.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,13 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import com.backend.movie_ticket_booking_system.config.JWTService;
-import com.backend.movie_ticket_booking_system.entities.User;
-import com.backend.movie_ticket_booking_system.request.AuthRequest;
-import com.backend.movie_ticket_booking_system.request.UserRequest;
-import com.backend.movie_ticket_booking_system.services.UserService;
-
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -58,9 +57,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/email/{emailId}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String emailId) {
-        return ResponseEntity.ok(userService.getUserByEmail(emailId));
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @PutMapping("/{userId}")
