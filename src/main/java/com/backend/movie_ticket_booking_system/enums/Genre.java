@@ -1,14 +1,18 @@
 package com.backend.movie_ticket_booking_system.enums;
 
 public enum Genre {
-    DRAMA,
-    THRILLER,
     ACTION,
-    ROMANTIC,
     COMEDY,
-    HISTORICAL,
+    DRAMA,
+    HORROR,
+    SCI_FI,
+    THRILLER,
+    ROMANCE,
     ANIMATION,
-    SPORTS,
-    SOCIAL,
-    WAR
+    DOCUMENTARY,
+    ADVENTURE,
+    FANTASY,
+    MYSTERY,
+    CRIME,
+    WESTERN
 }
