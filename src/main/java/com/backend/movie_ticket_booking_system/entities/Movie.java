@@ -5,8 +5,11 @@ import com.backend.movie_ticket_booking_system.enums.Language;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.sql.Timestamp;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,17 @@ public class Movie {
 
     private String description;
     private String movieImage;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Timestamp updatedAt;
 
     @Override
     public final boolean equals(Object o) {

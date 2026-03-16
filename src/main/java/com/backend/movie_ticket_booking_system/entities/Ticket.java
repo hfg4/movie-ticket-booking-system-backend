@@ -1,11 +1,14 @@
 package com.backend.movie_ticket_booking_system.entities;
 
+import com.backend.movie_ticket_booking_system.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,12 +25,27 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ticketId;
 
-    private Integer totalTicketsPrice;
+    private Double totalTicketsPrice;
 
-    private String bookedSeats;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private TicketStatus status = TicketStatus.CONFIRMED;
+
+    @Column(unique = true, nullable = false)
+    private String confirmationNumber;
 
     @CreationTimestamp
-    private Date bookedAt;
+    @Column(nullable = false, updatable = false)
+    private Timestamp bookedAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "TICKET_SEATS",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "show_seat_id")
+    )
+    @Builder.Default
+    private List<ShowSeat> showSeats = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn
