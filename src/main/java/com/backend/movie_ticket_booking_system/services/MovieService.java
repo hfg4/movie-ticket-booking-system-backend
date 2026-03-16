@@ -1,15 +1,18 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.backend.movie_ticket_booking_system.convertor.MovieConvertor;
 import com.backend.movie_ticket_booking_system.entities.Movie;
 import com.backend.movie_ticket_booking_system.exceptions.MovieAlreadyExist;
 import com.backend.movie_ticket_booking_system.exceptions.MovieDoesNotExist;
 import com.backend.movie_ticket_booking_system.repositories.MovieRepository;
 import com.backend.movie_ticket_booking_system.request.MovieRequest;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +60,19 @@ public class MovieService {
         return movieOpt.get();
     }
 
-    public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+    public List<Movie> getAllMovies(String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        return movieRepository.findAll(sort);
+    }
+
+    public Page<Movie> getAllMovies(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        return movieRepository.findAll(pageable);
     }
 
     public Movie getMovieByName(String movieName) {

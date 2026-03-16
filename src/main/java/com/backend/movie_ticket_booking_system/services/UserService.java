@@ -1,18 +1,20 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.backend.movie_ticket_booking_system.convertor.UserConvertor;
 import com.backend.movie_ticket_booking_system.entities.User;
+import com.backend.movie_ticket_booking_system.enums.Role;
 import com.backend.movie_ticket_booking_system.exceptions.UserDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.UserExist;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.UserRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -95,7 +97,10 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         }
         if (userRequest.getRoles() != null) {
-            user.setRoles(userRequest.getRoles());
+            user.setRoles(Arrays.stream(userRequest.getRoles().split(","))
+                    .map(String::trim)
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet()));
         }
 
         userRepository.save(user);

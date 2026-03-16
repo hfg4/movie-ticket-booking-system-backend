@@ -14,6 +14,8 @@ public class MovieConvertor {
                 .language(movieRequest.getLanguage())
                 .releaseDate(movieRequest.getReleaseDate())
                 .rating(movieRequest.getRating())
+                .description(movieRequest.getDescription())
+                .movieImage(movieRequest.getMovieImage())
                 .build();
     }
 }

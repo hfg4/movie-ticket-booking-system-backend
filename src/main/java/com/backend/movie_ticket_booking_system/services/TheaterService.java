@@ -1,8 +1,5 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.backend.movie_ticket_booking_system.convertor.TheaterConvertor;
 import com.backend.movie_ticket_booking_system.entities.Theater;
 import com.backend.movie_ticket_booking_system.entities.TheaterSeat;
@@ -13,6 +10,8 @@ import com.backend.movie_ticket_booking_system.exceptions.TheaterIsNotExist;
 import com.backend.movie_ticket_booking_system.repositories.TheaterRepository;
 import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +64,7 @@ public class TheaterService {
 
             TheaterSeat theaterSeat = new TheaterSeat();
             theaterSeat.setSeatNo(seatNo);
-            theaterSeat.setSeatType(SeatType.CLASSIC);
+            theaterSeat.setSeatType(SeatType.STANDARD);
             theaterSeat.setTheater(theater);
             seatList.add(theaterSeat);
         }
