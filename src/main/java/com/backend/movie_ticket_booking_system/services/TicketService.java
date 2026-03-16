@@ -134,13 +134,7 @@ public class TicketService {
     }
 
     public List<Ticket> getTicketsByUserId(Integer userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
-
-        if (userOpt.isEmpty()) {
-            throw new UserDoesNotExist();
-        }
-
-        return userOpt.get().getTicketList();
+        return ticketRepository.findByUser_Id(userId);
     }
 
     @Transactional

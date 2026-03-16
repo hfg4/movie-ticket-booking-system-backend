@@ -20,7 +20,7 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    @PostMapping("/book")
+    @PostMapping("/addNew")
     public ResponseEntity<Object> ticketBooking(@RequestBody TicketRequest ticketRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.ticketBooking(ticketRequest)); // ✅ instance call, added semicolon
     }

@@ -1,5 +1,6 @@
 package com.backend.movie_ticket_booking_system.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,6 +36,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn
+    @JsonIgnore
     private User user;
 
     @Override
