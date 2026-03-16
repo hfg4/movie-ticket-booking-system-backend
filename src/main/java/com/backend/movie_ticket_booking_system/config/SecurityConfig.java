@@ -42,7 +42,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()                              // ✅ Swagger whitelisted
-                        .requestMatchers("/user/**", "/movie/all", "/movie/name/**", "/theater/all", "/show/all", "/show/movie/**").permitAll()
+                        .requestMatchers("/user/**", "/movie/all", "/movie/name/**", "/theater/all", "/show/all", "/show/movie/**", "/movie/*", "/show/*", "/theater/*").permitAll()
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/show/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/theater/**").hasAuthority("ROLE_ADMIN")

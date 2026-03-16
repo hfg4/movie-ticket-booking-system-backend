@@ -23,6 +23,7 @@ public class UserInfoUserDetails implements UserDetails {
         name = userInfo.getEmailId();
         password = userInfo.getPassword();
         authorities = Arrays.stream(userInfo.getRoles().split(","))
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
