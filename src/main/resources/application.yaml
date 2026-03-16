@@ -1,9 +1,10 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:hunganh250}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,12 +12,51 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  springdoc:
+    api-docs:
+      path: /v3/api-docs
+      enabled: true
+    swagger-ui:
+      path: /swagger-ui.html
+      enabled: true
+      operationsSorter: method
+      tagsSorter: alpha
+      tryItOutEnabled: true
+      docExpansion: list
+
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiration: 3600000
+  cloudinary:
+    cloud_name: ${CLOUD_NAME:}
+    api_key: ${API_KEY:}
+    api_secret: ${API_SECRET:}
+
+
+  logging:
+    level:
+      root: INFO
+      org.springframework: INFO
+      org.hibernate.SQL: DEBUG
+      org.hibernate.orm.jdbc.bind: TRACE
+      com.backend.movie_ticket_booking_system: DEBUG
+    structured:
+      format:
+        console: ecs
+      ecs:
+        service:
+          name: movie-ticket-booking
+          version: ${project.version:0.0.1-SNAPSHOT}
+          environment: ${SPRING_PROFILES_ACTIVE:dev}
+
 server:
   port: 8080
-jwt:
-  secret: ${JWT_SECRET:0D4MZtm70C8HVYCVCBvGwat7LYec66C2I87Y+YyBZHg=}
-  expiration: 3600000
-cloudinary:
-  cloud_name: ${CLOUD_NAME:dul9q7k8g}
-  api_key: ${API_KEY:372722121212222}
-  api_secret: ${API_SECRET:372722121212222}
+  error:
+    include-message: always       # helpful in dev
+    include-binding-errors: always
+    include-stacktrace: on_param  # never in prod
+    include-exception: false
+
+

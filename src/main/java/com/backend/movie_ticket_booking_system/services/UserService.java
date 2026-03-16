@@ -29,7 +29,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public String addUser(UserRequest userRequest) {
-        Optional<User> users = userRepository.findByEmail(userRequest.getEmailId());
+        Optional<User> users = userRepository.findByEmail(userRequest.getEmail());
 
         if (users.isPresent()) {
             throw new UserExist();
@@ -89,12 +89,12 @@ public class UserService {
         if (userRequest.getMobileNo() != null) {
             user.setMobileNo(userRequest.getMobileNo());
         }
-        if (userRequest.getEmailId() != null) {
-            Optional<User> existingUser = userRepository.findByEmail(userRequest.getEmailId());
+        if (userRequest.getEmail() != null) {
+            Optional<User> existingUser = userRepository.findByEmail(userRequest.getEmail());
             if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
                 throw new UserExist();
             }
-            user.setEmail(userRequest.getEmailId());
+            user.setEmail(userRequest.getEmail());
         }
         if (userRequest.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
