@@ -40,6 +40,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketsByUserId(userId));
     }
 
+    @PutMapping("/{ticketId}/rate")
+    public ResponseEntity<String> rateTicket(@PathVariable Integer ticketId, @RequestParam Integer rating) {
+        return ResponseEntity.ok(ticketService.rateTicket(ticketId, rating));
+    }
+
     @DeleteMapping("/cancel/{ticketId}")
     public ResponseEntity<String> cancelTicket(@PathVariable Integer ticketId) {
         return ResponseEntity.ok(ticketService.cancelTicket(ticketId));

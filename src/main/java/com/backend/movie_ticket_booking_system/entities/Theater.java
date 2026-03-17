@@ -3,8 +3,11 @@ package com.backend.movie_ticket_booking_system.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,8 +28,30 @@ public class Theater {
 
     private String name;
 
-    @Column(unique = true)
     private String address;
+
+    private String city;
+
+    private String state;
+
+    private String country;
+
+    private String postalCode;
+
+    private String phone;
+
+    private String email;
+
+    @Builder.Default
+    private Boolean isActive = true;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL)
     @ToString.Exclude

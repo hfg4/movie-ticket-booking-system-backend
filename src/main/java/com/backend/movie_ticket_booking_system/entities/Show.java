@@ -1,10 +1,13 @@
 package com.backend.movie_ticket_booking_system.entities;
 
+import com.backend.movie_ticket_booking_system.enums.ShowStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.sql.Timestamp;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -25,9 +28,22 @@ public class Show {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer showId;
 
-    private Time time;
+    private Time showTime;
 
-    private Date date;
+    private Date showDate;
+
+    private Integer screenNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ShowStatus status = ShowStatus.ACTIVE;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Timestamp createdAt;
 
     @ManyToOne
     @JoinColumn

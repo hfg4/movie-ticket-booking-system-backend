@@ -1,8 +1,12 @@
 package com.backend.movie_ticket_booking_system.convertor;
 
 import com.backend.movie_ticket_booking_system.entities.User;
+import com.backend.movie_ticket_booking_system.enums.Role;
 import com.backend.movie_ticket_booking_system.request.UserRequest;
 import com.backend.movie_ticket_booking_system.response.UserResponse;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class UserConvertor {
 
@@ -14,8 +18,11 @@ public class UserConvertor {
                 .address(userRequest.getAddress())
                 .gender(userRequest.getGender())
                 .mobileNo(userRequest.getMobileNo())
-                .emailId(userRequest.getEmailId())
-                .roles(userRequest.getRoles())
+                .email(userRequest.getEmail())
+                .roles(Arrays.stream(userRequest.getRoles().split(","))
+                        .map(String::trim)
+                        .map(Role::valueOf)
+                        .collect(Collectors.toSet()))
                 .password(password)
                 .build();
     }

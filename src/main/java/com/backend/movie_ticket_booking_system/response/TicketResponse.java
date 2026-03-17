@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,6 +19,7 @@ public class TicketResponse {
     private String movieName;
     private String theaterName;
     private String address;
-    private String bookedSeats;
-    private Integer totalPrice;
+    private List<String> bookedSeats;
+    private Double totalPrice;
+    private String confirmationNumber;
 }

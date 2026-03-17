@@ -1,6 +1,5 @@
 package com.backend.movie_ticket_booking_system.entities;
 
-import com.backend.movie_ticket_booking_system.enums.SeatType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,23 +12,23 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShowSeat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String seatNo;
+    @ManyToOne
+    @JoinColumn(name = "theater_seat_id")
+    private TheaterSeat theaterSeat;
 
-    @Enumerated(value = EnumType.STRING)
-    private SeatType seatType;
+    private Double price;
 
-    private Integer price;
-
-    private Boolean isAvailable;
-
-    private Boolean isFoodContains;
+    @Builder.Default
+    private Boolean isFoodIncluded = false;
 
     @ManyToOne
     @JoinColumn

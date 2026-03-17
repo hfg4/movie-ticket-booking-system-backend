@@ -2,6 +2,7 @@ package com.backend.movie_ticket_booking_system.exceptions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,11 +28,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException e) {
         String errors = e.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(java.util.stream.Collectors.joining(", "));
         log.warn("Validation error: {}", errors);
         if (errors.isEmpty() && e.getGlobalErrorCount() > 0) {
-            errors = e.getBindingResult().getGlobalErrors().get(0).getDefaultMessage();
+            errors = e.getBindingResult().getGlobalErrors().getFirst().getDefaultMessage();
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }

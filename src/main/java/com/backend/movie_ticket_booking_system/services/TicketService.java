@@ -1,12 +1,5 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.movie_ticket_booking_system.convertor.TicketConvertor;
 import com.backend.movie_ticket_booking_system.entities.Show;
 import com.backend.movie_ticket_booking_system.entities.ShowSeat;
@@ -21,8 +14,13 @@ import com.backend.movie_ticket_booking_system.repositories.TicketRepository;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.TicketRequest;
 import com.backend.movie_ticket_booking_system.response.TicketResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -37,86 +35,43 @@ public class TicketService {
     private UserRepository userRepository;
 
     @Transactional
-    @SuppressWarnings("unused")
     public TicketResponse ticketBooking(TicketRequest ticketRequest) {
-        Optional<Show> showOpt = showRepository.findById(ticketRequest.getShowId());
+        Show show = showRepository.findById(ticketRequest.getShowId())
+                .orElseThrow(ShowDoesNotExist::new);
 
-        if (showOpt.isEmpty()) {
-            throw new ShowDoesNotExist();
-        }
+        User user = userRepository.findById(ticketRequest.getUserId())
+                .orElseThrow(UserDoesNotExist::new);
 
-        Optional<User> userOpt = userRepository.findById(ticketRequest.getUserId());
+        List<ShowSeat> availableSeats = ticketRepository.findAvailableSeatsByShowId(show.getShowId());
+        List<ShowSeat> requestedSeats = show.getShowSeatList().stream()
+                .filter(ss -> ticketRequest.getRequestSeats().contains(ss.getTheaterSeat().getSeatNo()))
+                .collect(Collectors.toList());
 
-        if (userOpt.isEmpty()) {
-            throw new UserDoesNotExist();
-        }
-
-        User user = userOpt.get();
-        Show show = showOpt.get();
-
-        Boolean isSeatAvailable = isSeatAvailable(show.getShowSeatList(), ticketRequest.getRequestSeats());
-
-        if (!isSeatAvailable) {
+        if (requestedSeats.size() != ticketRequest.getRequestSeats().size()) {
             throw new SeatNotAvailable();
         }
 
-        // count price
-        Integer getPriceAndAssignSeats = getPriceAndAssignSeats(show.getShowSeatList(),	ticketRequest.getRequestSeats());
+        for (ShowSeat rs : requestedSeats) {
+            if (!availableSeats.contains(rs)) {
+                throw new SeatNotAvailable();
+            }
+        }
 
-        String seats = listToString(ticketRequest.getRequestSeats());
+        Double totalAmount = requestedSeats.stream()
+                .mapToDouble(ShowSeat::getPrice)
+                .sum();
 
-        Ticket ticket = new Ticket();
-        ticket.setTotalTicketsPrice(getPriceAndAssignSeats);
-        ticket.setBookedSeats(seats);
-        ticket.setUser(user);
-        ticket.setShow(show);
+        Ticket ticket = Ticket.builder()
+                .totalTicketsPrice(totalAmount)
+                .confirmationNumber("TKT-" + System.currentTimeMillis() + "-" + user.getId())
+                .user(user)
+                .show(show)
+                .showSeats(requestedSeats)
+                .build();
 
         ticket = ticketRepository.save(ticket);
 
-        user.getTicketList().add(ticket);
-        show.getTicketList().add(ticket);
-        userRepository.save(user);
-        showRepository.save(show);
-
         return TicketConvertor.returnTicket(show, ticket);
-    }
-
-    private Boolean isSeatAvailable(List<ShowSeat> showSeatList, List<String> requestSeats) {
-        for (ShowSeat showSeat : showSeatList) {
-            String seatNo = showSeat.getSeatNo();
-
-            if (requestSeats.contains(seatNo) && !showSeat.getIsAvailable()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private Integer getPriceAndAssignSeats(List<ShowSeat> showSeatList, List<String> requestSeats) {
-        Integer totalAmount = 0;
-
-        for (ShowSeat showSeat : showSeatList) {
-            if (requestSeats.contains(showSeat.getSeatNo())) {
-                totalAmount += showSeat.getPrice();
-                showSeat.setIsAvailable(Boolean.FALSE);
-            }
-        }
-
-        return totalAmount;
-    }
-
-    private String listToString(List<String> requestSeats) {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < requestSeats.size(); i++) {
-            sb.append(requestSeats.get(i));
-            if (i < requestSeats.size() - 1) {
-                sb.append(",");
-            }
-        }
-
-        return sb.toString();
     }
 
     public Ticket getTicketById(Integer ticketId) {
@@ -138,7 +93,7 @@ public class TicketService {
     }
 
     @Transactional
-    public String cancelTicket(Integer ticketId) {
+    public String rateTicket(Integer ticketId, Integer rating) {
         Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
 
         if (ticketOpt.isEmpty()) {
@@ -146,19 +101,18 @@ public class TicketService {
         }
 
         Ticket ticket = ticketOpt.get();
-        Show show = ticket.getShow();
+        ticket.setRating(rating);
+        ticketRepository.save(ticket);
 
-        String bookedSeats = ticket.getBookedSeats();
-        List<String> seatsList = Arrays.asList(bookedSeats.split(","));
+        return "Ticket rated successfully";
+    }
 
-        for (ShowSeat showSeat : show.getShowSeatList()) {
-            if (seatsList.contains(showSeat.getSeatNo())) {
-                showSeat.setIsAvailable(Boolean.TRUE);
-            }
-        }
+    @Transactional
+    public String cancelTicket(Integer ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(TicketDoesNotExist::new);
 
-        showRepository.save(show);
-        ticketRepository.deleteById(ticketId);
+        ticketRepository.delete(ticket);
 
         return "Ticket cancelled successfully";
     }

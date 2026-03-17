@@ -8,8 +8,8 @@ public class ShowConvertor {
     public static Show showDtoToShow(ShowRequest showRequest) {
 
         return Show.builder()
-                .time(showRequest.getShowStartTime())
-                .date(showRequest.getShowDate())
+                .showTime(showRequest.getShowStartTime())
+                .showDate(showRequest.getShowDate())
                 .build();
     }
 }

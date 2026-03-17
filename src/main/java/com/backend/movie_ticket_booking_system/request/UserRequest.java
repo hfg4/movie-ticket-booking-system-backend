@@ -1,7 +1,6 @@
 package com.backend.movie_ticket_booking_system.request;
 
 import com.backend.movie_ticket_booking_system.enums.Gender;
-
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -26,7 +25,7 @@ public class UserRequest {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    private String emailId;
+    private String email;
 
     private Gender gender;
 

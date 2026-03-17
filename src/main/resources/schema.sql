@@ -8,6 +8,7 @@ CREATE TABLE MOVIES (
                         language      VARCHAR(50)    NOT NULL,
                         description   TEXT           DEFAULT NULL,
                         movie_image   VARCHAR(500)   DEFAULT NULL,
+                        is_banner     BOOLEAN        NOT NULL DEFAULT FALSE,
                         is_deleted    BOOLEAN        NOT NULL DEFAULT FALSE,
                         created_at    TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         updated_at   TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -119,6 +120,7 @@ CREATE TABLE TICKETS (
                          status                 VARCHAR(50)    NOT NULL DEFAULT 'CONFIRMED',
                          confirmation_number    VARCHAR(50)    NOT NULL UNIQUE,
                          booked_at              TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         rating                 INT            DEFAULT NULL,
 
                          FOREIGN KEY (show_id) REFERENCES SHOWS(show_id),
                          FOREIGN KEY (user_id) REFERENCES USERS(id),

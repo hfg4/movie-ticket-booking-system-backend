@@ -1,14 +1,16 @@
 package com.backend.movie_ticket_booking_system.entities;
 
 import com.backend.movie_ticket_booking_system.enums.Gender;
+import com.backend.movie_ticket_booking_system.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Entity
 @Table(name = "USERS")
@@ -36,12 +38,27 @@ public class User {
 
     private String mobileNo;
 
-    @Column(unique = true)
-    private String emailId;
+    private String email;
 
     private String password;
 
-    private String roles;
+    @Builder.Default
+    private Boolean isActive = true;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Timestamp updatedAt;
+
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude

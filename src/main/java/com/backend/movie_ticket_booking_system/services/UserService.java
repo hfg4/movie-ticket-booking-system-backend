@@ -1,30 +1,35 @@
 package com.backend.movie_ticket_booking_system.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.backend.movie_ticket_booking_system.convertor.UserConvertor;
 import com.backend.movie_ticket_booking_system.entities.User;
+import com.backend.movie_ticket_booking_system.enums.Role;
 import com.backend.movie_ticket_booking_system.exceptions.UserDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.UserExist;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.UserRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     public String addUser(UserRequest userRequest) {
-        Optional<User> users = userRepository.findByEmailId(userRequest.getEmailId());
+        Optional<User> users = userRepository.findByEmail(userRequest.getEmail());
 
         if (users.isPresent()) {
             throw new UserExist();
@@ -51,7 +56,7 @@ public class UserService {
     }
 
     public User getUserByEmail(String emailId) {
-        Optional<User> userOpt = userRepository.findByEmailId(emailId);
+        Optional<User> userOpt = userRepository.findByEmail(emailId);
 
         if (userOpt.isEmpty()) {
             throw new UserDoesNotExist();
@@ -84,18 +89,21 @@ public class UserService {
         if (userRequest.getMobileNo() != null) {
             user.setMobileNo(userRequest.getMobileNo());
         }
-        if (userRequest.getEmailId() != null) {
-            Optional<User> existingUser = userRepository.findByEmailId(userRequest.getEmailId());
+        if (userRequest.getEmail() != null) {
+            Optional<User> existingUser = userRepository.findByEmail(userRequest.getEmail());
             if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
                 throw new UserExist();
             }
-            user.setEmailId(userRequest.getEmailId());
+            user.setEmail(userRequest.getEmail());
         }
         if (userRequest.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         }
         if (userRequest.getRoles() != null) {
-            user.setRoles(userRequest.getRoles());
+            user.setRoles(Arrays.stream(userRequest.getRoles().split(","))
+                    .map(String::trim)
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet()));
         }
 
         userRepository.save(user);
