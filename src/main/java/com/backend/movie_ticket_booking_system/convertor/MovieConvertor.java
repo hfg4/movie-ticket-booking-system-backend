@@ -13,7 +13,6 @@ public class MovieConvertor {
                 .genre(movieRequest.getGenre())
                 .language(movieRequest.getLanguage())
                 .releaseDate(movieRequest.getReleaseDate())
-                .rating(movieRequest.getRating())
                 .description(movieRequest.getDescription())
                 .movieImage(movieRequest.getMovieImage())
                 .isBanner(movieRequest.getIsBanner() != null ? movieRequest.getIsBanner() : false)

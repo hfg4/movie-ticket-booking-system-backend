@@ -13,4 +13,13 @@ public class TheaterRequest {
     @NotBlank(message = "Address is required")
     @Size(min = 5, max = 200, message = "Address must be between 5 and 200 characters")
     private String address;
+
+    @NotBlank(message = "City is required")
+    private String city;
+
+    @NotBlank(message = "State is required")
+    private String state;
+
+    @NotBlank(message = "Country is required")
+    private String country;
 }

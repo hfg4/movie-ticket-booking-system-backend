@@ -86,7 +86,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // User endpoints - Accessible to all authenticated users
-                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
 
                         // Admin-only endpoints - Show management
@@ -96,7 +96,7 @@ public class SecurityConfig {
                         .requestMatchers("/theater/**").hasAuthority("ROLE_ADMIN")
 
                         // Ticket endpoints - Accessible to both users and admins
-                        .requestMatchers("/ticket/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/ticket/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()

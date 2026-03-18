@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,13 +38,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(userEntryDto));
     }
 
-    @PostMapping("/getToken")
+    @PostMapping("/login")
     public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            return ResponseEntity.ok(jwtService.generateToken(authRequest.getUsername()));
+            if (authentication.isAuthenticated()) {
+                return ResponseEntity.ok(jwtService.generateToken(authRequest.getUsername()));
+            }
+        } catch (DisabledException | LockedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị khóa, vui lòng liên hệ admin");
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("Invalid user credentials.");
         }
 
         throw new UsernameNotFoundException("Invalid user credentials.");
@@ -67,9 +76,23 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(userId, userRequest));
     }
 
+    @PutMapping("/{userId}/toggleLock")
+    public ResponseEntity<String> toggleLock(@PathVariable Integer userId) {
+        return ResponseEntity.ok(userService.toggleLock(userId));
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<String> updatePassword(@PathVariable Integer userId, @RequestBody java.util.Map<String, String> payload) {
+        String newPassword = payload.get("newPassword");
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password cannot be empty");
+        }
+        return ResponseEntity.ok(userService.updateUserPassword(userId, newPassword));
     }
 
 }

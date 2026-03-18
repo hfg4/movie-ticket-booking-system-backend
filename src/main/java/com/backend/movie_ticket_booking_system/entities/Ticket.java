@@ -50,11 +50,11 @@ public class Ticket {
     private Integer rating;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "show_id")
     private Show show;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 

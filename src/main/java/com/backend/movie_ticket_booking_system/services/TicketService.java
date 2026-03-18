@@ -61,6 +61,11 @@ public class TicketService {
                 .mapToDouble(ShowSeat::getPrice)
                 .sum();
 
+        // Mark seats as unavailable
+        for (ShowSeat ss : requestedSeats) {
+            ss.setIsAvailable(Boolean.FALSE);
+        }
+
         Ticket ticket = Ticket.builder()
                 .totalTicketsPrice(totalAmount)
                 .confirmationNumber("TKT-" + System.currentTimeMillis() + "-" + user.getId())

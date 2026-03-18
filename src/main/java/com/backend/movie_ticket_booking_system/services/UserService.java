@@ -25,6 +25,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -42,7 +43,7 @@ public class UserService {
     }
 
     public User getUserById(Integer userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findByIdAndIsActiveTrue(userId);
 
         if (userOpt.isEmpty()) {
             throw new UserDoesNotExist();
@@ -56,7 +57,7 @@ public class UserService {
     }
 
     public User getUserByEmail(String emailId) {
-        Optional<User> userOpt = userRepository.findByEmail(emailId);
+        Optional<User> userOpt = userRepository.findByEmailAndIsActiveTrue(emailId);
 
         if (userOpt.isEmpty()) {
             throw new UserDoesNotExist();
@@ -66,7 +67,7 @@ public class UserService {
     }
 
     public String updateUser(Integer userId, UserRequest userRequest) {
-        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findByIdAndIsActiveTrue(userId);
 
         if (userOpt.isEmpty()) {
             throw new UserDoesNotExist();
@@ -117,8 +118,39 @@ public class UserService {
             throw new UserDoesNotExist();
         }
 
-        userRepository.deleteById(userId);
-        return "User deleted successfully";
+        try {
+            userRepository.deleteById(userId);
+            return "User deleted successfully";
+        } catch (Exception e) {
+            return "Không thể xóa người dùng do có dữ liệu liên quan (ví dụ: vé đã đặt).";
+        }
+    }
+
+    public String toggleLock(Integer userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+
+        User user = userOpt.get();
+        user.setIsActive(!user.getIsActive());
+        userRepository.save(user);
+        return user.getIsActive() ? "Tài khoản đã được mở khóa" : "Tài khoản đã bị khóa";
+    }
+
+    public String updateUserPassword(Integer userId, String newPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "User password updated successfully";
     }
 
 }

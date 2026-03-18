@@ -27,7 +27,7 @@ public class MovieService {
     private com.backend.movie_ticket_booking_system.repositories.TicketRepository ticketRepository;
 
     public String addMovie(MovieRequest movieRequest) {
-        Movie movieByName = movieRepository.findByMovieName(movieRequest.getMovieName());
+        Movie movieByName = movieRepository.findByMovieNameAndIsDeletedFalse(movieRequest.getMovieName());
 
         if (movieByName != null && movieByName.getLanguage().equals(movieRequest.getLanguage())) {
             throw new MovieAlreadyExist();
@@ -41,7 +41,7 @@ public class MovieService {
     }
 
     public String addMovieImage(String movieImage, @Valid MovieRequest movieRequest) {
-        Movie movieByName = movieRepository.findByMovieName(movieRequest.getMovieName());
+        Movie movieByName = movieRepository.findByMovieNameAndIsDeletedFalse(movieRequest.getMovieName());
 
         if (movieByName != null && movieByName.getLanguage().equals(movieRequest.getLanguage())) {
             throw new MovieAlreadyExist();
@@ -56,7 +56,7 @@ public class MovieService {
     }
 
     public Movie getMovieById(Integer movieId) {
-        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+        Optional<Movie> movieOpt = movieRepository.findByIdAndIsDeletedFalse(movieId);
 
         if (movieOpt.isEmpty()) {
             throw new MovieDoesNotExist();
@@ -70,7 +70,7 @@ public class MovieService {
     public List<Movie> getAllMovies(String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-        List<Movie> movies = movieRepository.findAll(sort);
+        List<Movie> movies = movieRepository.findAllByIsDeletedFalse(sort);
         for (Movie movie : movies) {
             movie.setRating(calculateAverageRating(movie.getId()));
         }
@@ -83,7 +83,7 @@ public class MovieService {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Movie> moviePage = movieRepository.findAll(pageable);
+        Page<Movie> moviePage = movieRepository.findAllByIsDeletedFalse(pageable);
         for (Movie movie : moviePage.getContent()) {
             movie.setRating(calculateAverageRating(movie.getId()));
         }
@@ -91,7 +91,7 @@ public class MovieService {
     }
 
     public List<Movie> getAllMovies() {
-        List<Movie> movies = movieRepository.findAll();
+        List<Movie> movies = movieRepository.findAllByIsDeletedFalse();
         for (Movie movie : movies) {
             movie.setRating(calculateAverageRating(movie.getId()));
         }
@@ -106,7 +106,7 @@ public class MovieService {
     }
 
     public Movie getMovieByName(String movieName) {
-        Movie movie = movieRepository.findByMovieName(movieName);
+        Movie movie = movieRepository.findByMovieNameAndIsDeletedFalse(movieName);
 
         if (movie == null) {
             throw new MovieDoesNotExist();
@@ -117,7 +117,7 @@ public class MovieService {
     }
 
     public String updateMovie(Integer movieId, MovieRequest movieRequest) {
-        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+        Optional<Movie> movieOpt = movieRepository.findByIdAndIsDeletedFalse(movieId);
 
         if (movieOpt.isEmpty()) {
             throw new MovieDoesNotExist();
@@ -157,7 +157,7 @@ public class MovieService {
 
     @org.springframework.transaction.annotation.Transactional
     public String setMovieBanner(Integer movieId) {
-        Movie movie = movieRepository.findById(movieId)
+        Movie movie = movieRepository.findByIdAndIsDeletedFalse(movieId)
                 .orElseThrow(MovieDoesNotExist::new);
 
         // Toggle banner status
@@ -168,13 +168,15 @@ public class MovieService {
     }
 
     public String deleteMovie(Integer movieId) {
-        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+        Optional<Movie> movieOpt = movieRepository.findByIdAndIsDeletedFalse(movieId);
 
         if (movieOpt.isEmpty()) {
             throw new MovieDoesNotExist();
         }
 
-        movieRepository.deleteById(movieId);
+        Movie movie = movieOpt.get();
+        movie.setIsDeleted(true);
+        movieRepository.save(movie);
         return "Movie deleted successfully";
     }
 

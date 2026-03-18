@@ -20,4 +20,6 @@ public class ShowRequest {
 
     @NotNull(message = "Movie ID is required")
     private Integer movieId;
+
+    private Integer screenNumber;
 }

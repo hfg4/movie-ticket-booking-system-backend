@@ -22,12 +22,12 @@ public class TheaterController {
     }
 
     @PostMapping("/addNew")
-    public ResponseEntity<String> addTheater(@RequestBody TheaterRequest request) {
+    public ResponseEntity<String> addTheater(@jakarta.validation.Valid @RequestBody TheaterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheater(request));
     }
 
     @PostMapping("/addTheaterSeat")
-    public ResponseEntity<String> addTheaterSeat(@RequestBody TheaterSeatRequest entryDto) {
+    public ResponseEntity<String> addTheaterSeat(@jakarta.validation.Valid @RequestBody TheaterSeatRequest entryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheaterSeats(entryDto));
     }
 
@@ -47,7 +47,7 @@ public class TheaterController {
     }
 
     @PutMapping("/{theaterId}")
-    public ResponseEntity<String> updateTheater(@PathVariable Integer theaterId, @RequestBody TheaterRequest theaterRequest) {
+    public ResponseEntity<String> updateTheater(@PathVariable Integer theaterId, @jakarta.validation.Valid @RequestBody TheaterRequest theaterRequest) {
         return ResponseEntity.ok(theaterService.updateTheater(theaterId, theaterRequest));
     }
 

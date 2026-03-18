@@ -22,8 +22,18 @@ public class TheaterService {
     private TheaterRepository theaterRepository;
 
     public String addTheater(TheaterRequest request) {
-        if (theaterRepository.findByAddress(request.getAddress()) != null) {
-            throw new TheaterIsExist();
+        Theater existingTheater = theaterRepository.findByAddress(request.getAddress());
+        if (existingTheater != null) {
+            if (Boolean.TRUE.equals(existingTheater.getIsActive())) {
+                 throw new TheaterIsExist();
+            }
+            existingTheater.setIsActive(true);
+            existingTheater.setName(request.getName());
+            existingTheater.setCity(request.getCity());
+            existingTheater.setState(request.getState());
+            existingTheater.setCountry(request.getCountry());
+            theaterRepository.save(existingTheater);
+            return "Theater reactivated successfully";
         }
 
         Theater theater = TheaterConvertor.theaterDtoToTheater(request);
@@ -35,6 +45,10 @@ public class TheaterService {
     @SuppressWarnings("unused")
     public String addTheaterSeats(TheaterSeatRequest request) {
         Theater theater = findTheaterByAddressOrThrow(request.getAddress());
+
+        if (!theater.getTheaterSeatList().isEmpty()) {
+             return "Theater previously configured; retaining existing seats";
+        }
 
         int seatsPerRow = request.getNoOfSeatInRow();
         int classicSeats = request.getNoOfClassicSeat();
@@ -55,7 +69,7 @@ public class TheaterService {
         char column = 'A';
 
         // Classic seats first
-        seatList.addAll(generateSeats(classicCount, seatsPerRow, row, seatInRow, column, SeatType.STANDARD));
+        seatList.addAll(generateSeats(theater, classicCount, seatsPerRow, row, seatInRow, column, SeatType.STANDARD));
 
         // Then premium seats (continuing from where classic left off)
         int lastRow = (classicCount + seatsPerRow - 1) / seatsPerRow;
@@ -72,10 +86,10 @@ public class TheaterService {
             column = 'A';
         }
 
-        seatList.addAll(generateSeats(premiumCount, seatsPerRow, row, seatInRow, column, SeatType.PREMIUM));
+        seatList.addAll(generateSeats(theater, premiumCount, seatsPerRow, row, seatInRow, column, SeatType.PREMIUM));
     }
 
-    private List<TheaterSeat> generateSeats(int count, int seatsPerRow, int startRow, int startSeatInRow, char startColumn, SeatType type) {
+    private List<TheaterSeat> generateSeats(Theater theater, int count, int seatsPerRow, int startRow, int startSeatInRow, char startColumn, SeatType type) {
         List<TheaterSeat> seats = new java.util.ArrayList<>();
 
         int row = startRow;
@@ -88,7 +102,7 @@ public class TheaterService {
             TheaterSeat seat = new TheaterSeat();
             seat.setSeatNo(seatNo);
             seat.setSeatType(type);
-            seat.setTheater(/* will be set later by caller */ null); // or pass theater if needed
+            seat.setTheater(theater);
 
             seats.add(seat);
 
@@ -107,12 +121,12 @@ public class TheaterService {
     }
 
     public Theater getTheaterById(Integer id) {
-        return theaterRepository.findById(id)
+        return theaterRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(TheaterDoesNotExist::new);
     }
 
     public Theater getTheaterByAddress(String address) {
-        Theater theater = theaterRepository.findByAddress(address);
+        Theater theater = theaterRepository.findByAddressAndIsActiveTrue(address);
         if (theater == null) {
             throw new TheaterDoesNotExist();
         }
@@ -120,12 +134,12 @@ public class TheaterService {
     }
 
     private Theater findTheaterByAddressOrThrow(String address) {
-        return Optional.ofNullable(theaterRepository.findByAddress(address))
+        return Optional.ofNullable(theaterRepository.findByAddressAndIsActiveTrue(address))
                 .orElseThrow(TheaterDoesNotExist::new);
     }
 
     public List<Theater> getAllTheaters() {
-        return theaterRepository.findAll();
+        return theaterRepository.findAllByIsActiveTrue();
     }
 
     public String updateTheater(Integer id, TheaterRequest request) {
@@ -147,10 +161,10 @@ public class TheaterService {
     }
 
     public String deleteTheater(Integer id) {
-        if (!theaterRepository.existsById(id)) {
-            throw new TheaterDoesNotExist();
-        }
-        theaterRepository.deleteById(id);
+        Theater theater = getTheaterById(id);
+        
+        theater.setIsActive(false);
+        theaterRepository.save(theater);
         return "Theater deleted successfully";
     }
     public String updateTheaterSeats(Integer theaterId, List<TheaterSeat> updatedSeats) {

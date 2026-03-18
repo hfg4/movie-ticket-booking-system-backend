@@ -10,6 +10,7 @@ public class ShowConvertor {
         return Show.builder()
                 .showTime(showRequest.getShowStartTime())
                 .showDate(showRequest.getShowDate())
+                .screenNumber(showRequest.getScreenNumber())
                 .build();
     }
 }
