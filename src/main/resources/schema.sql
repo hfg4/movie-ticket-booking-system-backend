@@ -167,3 +167,12 @@ SELECT
 FROM SHOW_SEATS ss
          JOIN THEATER_SEATS ts ON ss.theater_seat_id = ts.id
           LEFT JOIN TICKET_SEATS tks ON ss.id = tks.show_seat_id;
+
+CREATE TABLE IF NOT EXISTS PASSWORD_RESET_TOKENS (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    token           VARCHAR(6)      NOT NULL,
+    user_id         INT             NOT NULL,
+    expiry_date     DATETIME        NOT NULL,
+    created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES USERS(id) ON DELETE CASCADE
+);

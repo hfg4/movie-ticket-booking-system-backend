@@ -95,4 +95,23 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserPassword(userId, newPassword));
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+        return ResponseEntity.ok(userService.generatePasswordResetToken(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody java.util.Map<String, String> request) {
+        String token = request.get("token");
+        String newPassword = request.get("newPassword");
+        if (token == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Token and newPassword are required");
+        }
+        return ResponseEntity.ok(userService.resetPassword(token, newPassword));
+    }
+
 }

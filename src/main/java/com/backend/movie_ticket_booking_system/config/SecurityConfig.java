@@ -34,6 +34,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter authFilter;
     private final UserInfoUserDetailsService userDetailsService;
+    private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
 
     @Value("${cors.allowed-origins:http://localhost:4200}")
     private String corsAllowedOrigins;
@@ -70,7 +71,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/user/register",
                                 "/user/login",
-                                "/user/refresh-token"
+                                "/user/refresh-token",
+                                "/user/forgot-password",
+                                "/user/reset-password",
+                                "/login/oauth2/**",
+                                "/admin/dashboard/**"
                         ).permitAll()
 
                         // Public endpoints - Read-only operations
@@ -110,6 +115,11 @@ public class SecurityConfig {
 
                 // JWT Filter - Before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // OAuth2 Login
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oauth2LoginSuccessHandler)
+                )
 
                 .build();
     }
