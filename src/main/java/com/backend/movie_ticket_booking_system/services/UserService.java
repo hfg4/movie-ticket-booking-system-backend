@@ -223,4 +223,8 @@ public class UserService {
         return "Đổi mật khẩu thành công!";
     }
 
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
 }

@@ -1,0 +1,2 @@
+-- The user's account has been upgraded to ADMIN via direct SQL.
+-- This file is intentionally kept clean to avoid accidental schema/data modifications on startup.

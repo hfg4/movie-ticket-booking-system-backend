@@ -42,10 +42,10 @@ public class UserController {
     public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
 
             if (authentication.isAuthenticated()) {
-                return ResponseEntity.ok(jwtService.generateToken(authRequest.getUsername()));
+                return ResponseEntity.ok(jwtService.generateToken(authRequest.getEmail()));
             }
         } catch (DisabledException | LockedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị khóa, vui lòng liên hệ admin");

@@ -16,7 +16,7 @@ CREATE TABLE MOVIES (
                         duration        INT            NOT NULL,
                         rating          DECIMAL(3, 1)  DEFAULT NULL,
                         release_date    DATE           DEFAULT NULL,
-                        genre           VARCHAR(50)    NOT NULL,
+                        genre           VARCHAR(255)   NOT NULL,
                         language        VARCHAR(50)    NOT NULL,
                         description     TEXT           DEFAULT NULL,
                         movie_image     VARCHAR(255) DEFAULT NULL,
@@ -24,12 +24,6 @@ CREATE TABLE MOVIES (
                         is_deleted      BOOLEAN      NOT NULL DEFAULT FALSE,
                         created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-                        CONSTRAINT chk_genre CHECK (genre IN (
-                                                              'ACTION', 'COMEDY', 'DRAMA', 'HORROR', 'SCI-FI', 'THRILLER',
-                                                              'ROMANCE', 'ANIMATION', 'DOCUMENTARY', 'ADVENTURE', 'FANTASY',
-                                                              'MYSTERY', 'CRIME', 'WESTERN'
-                            )),
                         CONSTRAINT chk_language CHECK (language IN (
                             'ENGLISH', 'HINDI', 'VIETNAMESE', 'SPANISH', 'FRENCH', 'GERMAN',
                             'MANDARIN', 'JAPANESE', 'KOREAN'
