@@ -42,17 +42,17 @@ public class TicketService {
         User user = userRepository.findById(ticketRequest.getUserId())
                 .orElseThrow(UserDoesNotExist::new);
 
-        List<ShowSeat> availableSeats = ticketRepository.findAvailableSeatsByShowId(show.getShowId());
-        List<ShowSeat> requestedSeats = show.getShowSeatList().stream()
-                .filter(ss -> ticketRequest.getRequestSeats().contains(ss.getTheaterSeat().getSeatNo()))
-                .collect(Collectors.toList());
+        // Lock seats to prevent race conditions
+        List<ShowSeat> requestedSeats = ticketRepository.findAndLockByShowIdAndSeatNos(
+                show.getShowId(), ticketRequest.getRequestSeats());
 
         if (requestedSeats.size() != ticketRequest.getRequestSeats().size()) {
             throw new SeatNotAvailable();
         }
 
+        // Verify if any of the locked seats are already booked (isAvailable = false)
         for (ShowSeat rs : requestedSeats) {
-            if (!availableSeats.contains(rs)) {
+            if (Boolean.FALSE.equals(rs.getIsAvailable())) {
                 throw new SeatNotAvailable();
             }
         }

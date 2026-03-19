@@ -112,9 +112,53 @@ public class UserService {
                     .map(Role::valueOf)
                     .collect(Collectors.toSet()));
         }
+        if (userRequest.getIsOneTapEnabled() != null) {
+            user.setIsOneTapEnabled(userRequest.getIsOneTapEnabled());
+        } else if (user.getIsOneTapEnabled() == null) {
+            user.setIsOneTapEnabled(false);
+        }
+        if (userRequest.getPaymentToken() != null) {
+            user.setPaymentToken(userRequest.getPaymentToken());
+        }
 
         userRepository.save(user);
         return "User updated successfully";
+    }
+
+    public String toggleOneTap(Integer userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+        User user = userOpt.get();
+        
+        // Handle NULL safely to prevent NullPointerException on unboxing
+        boolean isEnabled = Boolean.TRUE.equals(user.getIsOneTapEnabled());
+        
+        if (!isEnabled && (user.getPaymentToken() == null || user.getPaymentToken().isEmpty())) {
+            throw new RuntimeException("Bạn cần liên kết phương thức thanh toán trước khi bật tính năng này!");
+        }
+
+        user.setIsOneTapEnabled(!isEnabled);
+        userRepository.save(user);
+        return user.getIsOneTapEnabled() ? "Thanh toán 1 chạm đã bật" : "Thanh toán 1 chạm đã tắt";
+    }
+
+    public String addPaymentMethod(Integer userId, String token) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+        User user = userOpt.get();
+        if (token == null || token.trim().isEmpty()) {
+            user.setPaymentToken(null);
+            user.setIsOneTapEnabled(false); // Force disable if no card
+            userRepository.save(user);
+            return "Đã gỡ phương thức thanh toán";
+        }
+        user.setPaymentToken(token);
+        userRepository.save(user);
+        return "Liên kết phương thức thanh toán thành công";
     }
 
     public String deleteUser(Integer userId) {

@@ -81,6 +81,11 @@ public class UserController {
         return ResponseEntity.ok(userService.toggleLock(userId));
     }
 
+    @PostMapping("/{userId}/toggle-one-tap")
+    public ResponseEntity<String> toggleOneTap(@PathVariable Integer userId) {
+        return ResponseEntity.ok(userService.toggleOneTap(userId));
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
@@ -112,6 +117,11 @@ public class UserController {
             return ResponseEntity.badRequest().body("Token and newPassword are required");
         }
         return ResponseEntity.ok(userService.resetPassword(token, newPassword));
+    }
+    @PostMapping("/{userId}/add-payment-method")
+    public ResponseEntity<String> addPaymentMethod(@PathVariable Integer userId, @RequestBody java.util.Map<String, String> payload) {
+        String token = payload.get("token");
+        return ResponseEntity.ok(userService.addPaymentMethod(userId, token));
     }
 
 }

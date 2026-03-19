@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
-        log.error("Domain exception stack trace:", e);
+        log.warn("Domain/Runtime exception: {}", e.getMessage());
         String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(msg);
     }

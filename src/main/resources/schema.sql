@@ -75,6 +75,8 @@ CREATE TABLE USERS (
                        email           VARCHAR(255) NOT NULL UNIQUE,
                        password        VARCHAR(255) NOT NULL,
                        is_active       BOOLEAN      NOT NULL DEFAULT TRUE,
+                       is_one_tap_enabled BOOLEAN      NOT NULL DEFAULT FALSE,
+                       payment_token   VARCHAR(255) DEFAULT NULL,
                        created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
                        updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
