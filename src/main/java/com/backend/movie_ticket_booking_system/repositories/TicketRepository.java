@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket,Integer> {
     List<Ticket> findByUser_Id(Integer userId);
-
+@SuppressWarnings("unused")
     @Query("SELECT ss FROM ShowSeat ss WHERE ss.show.showId = :showId AND ss.id NOT IN (SELECT ts.id FROM Ticket t JOIN t.showSeats ts WHERE t.show.showId = :showId)")
     List<ShowSeat> findAvailableSeatsByShowId(@Param("showId") Integer showId);
 

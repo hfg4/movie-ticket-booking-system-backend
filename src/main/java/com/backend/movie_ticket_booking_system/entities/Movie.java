@@ -39,7 +39,7 @@ public class Movie {
 
     private Date releaseDate;
 
-    private String genre;
+    private Genre genre;
 
     @Enumerated(value = EnumType.STRING)
     private Language language;

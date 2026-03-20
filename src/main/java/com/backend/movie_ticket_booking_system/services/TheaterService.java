@@ -9,17 +9,17 @@ import com.backend.movie_ticket_booking_system.exceptions.TheaterIsExist;
 import com.backend.movie_ticket_booking_system.repositories.TheaterRepository;
 import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TheaterService {
 
-    @Autowired
-    private TheaterRepository theaterRepository;
+    private final TheaterRepository theaterRepository;
 
     public String addTheater(TheaterRequest request) {
         Theater existingTheater = theaterRepository.findByAddress(request.getAddress());
@@ -167,7 +167,8 @@ public class TheaterService {
         theaterRepository.save(theater);
         return "Theater deleted successfully";
     }
-    public String updateTheaterSeats(Integer theaterId, List<TheaterSeat> updatedSeats) {
+    @SuppressWarnings("unused")
+    public void updateTheaterSeats(Integer theaterId, List<TheaterSeat> updatedSeats) {
         Optional<Theater> theaterOpt = theaterRepository.findById(theaterId);
         if (theaterOpt.isEmpty()) {
             throw new TheaterDoesNotExist();
@@ -186,6 +187,5 @@ public class TheaterService {
         }
 
         theaterRepository.save(theater);
-        return "Theater seats updated successfully";
     }
 }

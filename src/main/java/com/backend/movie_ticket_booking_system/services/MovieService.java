@@ -2,12 +2,13 @@ package com.backend.movie_ticket_booking_system.services;
 
 import com.backend.movie_ticket_booking_system.convertor.MovieConvertor;
 import com.backend.movie_ticket_booking_system.entities.Movie;
+import com.backend.movie_ticket_booking_system.enums.Genre;
 import com.backend.movie_ticket_booking_system.exceptions.MovieAlreadyExist;
 import com.backend.movie_ticket_booking_system.exceptions.MovieDoesNotExist;
 import com.backend.movie_ticket_booking_system.repositories.MovieRepository;
 import com.backend.movie_ticket_booking_system.request.MovieRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +19,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MovieService {
 
-    @Autowired
-    private MovieRepository movieRepository;
 
-    @Autowired
-    private com.backend.movie_ticket_booking_system.repositories.TicketRepository ticketRepository;
+    private final MovieRepository movieRepository;
+
+
+    private final com.backend.movie_ticket_booking_system.repositories.TicketRepository ticketRepository;
 
     public String addMovie(MovieRequest movieRequest) {
         Movie movieByName = movieRepository.findByMovieNameAndIsDeletedFalse(movieRequest.getMovieName());
@@ -89,7 +91,7 @@ public class MovieService {
         }
         return moviePage;
     }
-
+@SuppressWarnings("unused")
     public List<Movie> getAllMovies() {
         List<Movie> movies = movieRepository.findAllByIsDeletedFalse();
         for (Movie movie : movies) {
@@ -136,7 +138,7 @@ public class MovieService {
             movie.setReleaseDate(movieRequest.getReleaseDate());
         }
         if (movieRequest.getGenre() != null) {
-            movie.setGenre(movieRequest.getGenre());
+            movie.setGenre(Genre.valueOf(movieRequest.getGenre()));
         }
         if (movieRequest.getLanguage() != null) {
             movie.setLanguage(movieRequest.getLanguage());

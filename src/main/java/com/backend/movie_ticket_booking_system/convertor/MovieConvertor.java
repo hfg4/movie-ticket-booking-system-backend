@@ -10,7 +10,7 @@ public class MovieConvertor {
         return Movie.builder()
                 .movieName(movieRequest.getMovieName())
                 .duration(movieRequest.getDuration())
-                .genre(movieRequest.getGenre())
+                .genre((movieRequest.getGenre()))
                 .language(movieRequest.getLanguage())
                 .releaseDate(movieRequest.getReleaseDate())
                 .description(movieRequest.getDescription())

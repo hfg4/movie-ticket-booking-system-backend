@@ -2,13 +2,16 @@ package com.backend.movie_ticket_booking_system.controllers;
 
 import com.backend.movie_ticket_booking_system.entities.Movie;
 import com.backend.movie_ticket_booking_system.request.MovieRequest;
+import com.backend.movie_ticket_booking_system.services.CloudinaryService;
 import com.backend.movie_ticket_booking_system.services.MovieService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -16,9 +19,11 @@ import java.util.List;
 public class MovieController {
 
     private final MovieService movieService;
+    private final CloudinaryService cloudinaryService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, CloudinaryService cloudinaryService) {
         this.movieService = movieService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @PostMapping("/addNew")
@@ -26,9 +31,33 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovie(movieRequest));
     }
 
-    @PostMapping("/addNew/{movieImage}")
-    public ResponseEntity<String> addMovieWithImage(@PathVariable String movieImage, @Valid @RequestBody MovieRequest movieRequest) {
+    @PostMapping("/addNewWithImageUrl")
+    public ResponseEntity<String> addMovieWithImage(@RequestParam("imageUrl") String movieImage, @Valid @RequestBody MovieRequest movieRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovieImage(movieImage, movieRequest));
+    }
+
+    @PostMapping(value = "/addNewWithImageUpload", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> addMovieWithImageUpload(
+            @RequestPart("movie") @Valid MovieRequest movieRequest,
+            @RequestPart("image") MultipartFile image) {
+        try {
+            String imageUrl = cloudinaryService.uploadImage(image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovieImage(imageUrl, movieRequest));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/{movieId}/image", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> uploadMovieImage(@PathVariable Integer movieId, @RequestPart("image") MultipartFile image) {
+        try {
+            String imageUrl = cloudinaryService.uploadImage(image);
+            MovieRequest movieRequest = new MovieRequest();
+            movieRequest.setMovieImage(imageUrl);
+            return ResponseEntity.ok(movieService.updateMovie(movieId, movieRequest));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{movieId}")

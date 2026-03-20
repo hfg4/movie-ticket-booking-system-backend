@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmailAndIsActiveTrue(String email);
-    
+    @SuppressWarnings("unused")
     List<User> findAllByIsActiveTrue();
     
     Optional<User> findByIdAndIsActiveTrue(Integer id);

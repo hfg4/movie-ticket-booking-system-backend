@@ -7,7 +7,6 @@ import com.backend.movie_ticket_booking_system.exceptions.UserDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.UserExist;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.UserRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,20 +19,19 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final com.backend.movie_ticket_booking_system.repositories.PasswordResetTokenRepository tokenRepository;
+    private final org.springframework.mail.javamail.JavaMailSender mailSender;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, 
+                       PasswordEncoder passwordEncoder, 
+                       com.backend.movie_ticket_booking_system.repositories.PasswordResetTokenRepository tokenRepository, 
+                       org.springframework.mail.javamail.JavaMailSender mailSender) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
+        this.mailSender = mailSender;
     }
-
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private com.backend.movie_ticket_booking_system.repositories.PasswordResetTokenRepository tokenRepository;
-
-    @Autowired
-    private org.springframework.mail.javamail.JavaMailSender mailSender;
 
     public String addUser(UserRequest userRequest) {
         Optional<User> users = userRepository.findByEmail(userRequest.getEmail());
@@ -266,7 +264,7 @@ public class UserService {
 
         return "Đổi mật khẩu thành công!";
     }
-
+@SuppressWarnings("unused")
     public User saveUser(User user) {
         return userRepository.save(user);
     }
