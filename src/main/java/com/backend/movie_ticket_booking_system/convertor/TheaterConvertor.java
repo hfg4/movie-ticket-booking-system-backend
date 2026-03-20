@@ -9,6 +9,10 @@ public class TheaterConvertor {
         return Theater.builder()
                 .name(theaterRequest.getName())
                 .address(theaterRequest.getAddress())
+                .city(theaterRequest.getCity())
+                .state(theaterRequest.getState())
+                .country(theaterRequest.getCountry())
+                .isActive(true)
                 .build();
     }
 }

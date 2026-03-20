@@ -42,17 +42,17 @@ public class TicketService {
         User user = userRepository.findById(ticketRequest.getUserId())
                 .orElseThrow(UserDoesNotExist::new);
 
-        List<ShowSeat> availableSeats = ticketRepository.findAvailableSeatsByShowId(show.getShowId());
-        List<ShowSeat> requestedSeats = show.getShowSeatList().stream()
-                .filter(ss -> ticketRequest.getRequestSeats().contains(ss.getTheaterSeat().getSeatNo()))
-                .collect(Collectors.toList());
+        // Lock seats to prevent race conditions
+        List<ShowSeat> requestedSeats = ticketRepository.findAndLockByShowIdAndSeatNos(
+                show.getShowId(), ticketRequest.getRequestSeats());
 
         if (requestedSeats.size() != ticketRequest.getRequestSeats().size()) {
             throw new SeatNotAvailable();
         }
 
+        // Verify if any of the locked seats are already booked (isAvailable = false)
         for (ShowSeat rs : requestedSeats) {
-            if (!availableSeats.contains(rs)) {
+            if (Boolean.FALSE.equals(rs.getIsAvailable())) {
                 throw new SeatNotAvailable();
             }
         }
@@ -60,6 +60,11 @@ public class TicketService {
         Double totalAmount = requestedSeats.stream()
                 .mapToDouble(ShowSeat::getPrice)
                 .sum();
+
+        // Mark seats as unavailable
+        for (ShowSeat ss : requestedSeats) {
+            ss.setIsAvailable(Boolean.FALSE);
+        }
 
         Ticket ticket = Ticket.builder()
                 .totalTicketsPrice(totalAmount)
@@ -89,13 +94,22 @@ public class TicketService {
     }
 
     public List<Ticket> getTicketsByUserId(Integer userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
+        return ticketRepository.findByUser_Id(userId);
+    }
 
-        if (userOpt.isEmpty()) {
-            throw new UserDoesNotExist();
+    @Transactional
+    public String rateTicket(Integer ticketId, Integer rating) {
+        Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
+
+        if (ticketOpt.isEmpty()) {
+            throw new TicketDoesNotExist();
         }
 
-        return userOpt.get().getTicketList();
+        Ticket ticket = ticketOpt.get();
+        ticket.setRating(rating);
+        ticketRepository.save(ticket);
+
+        return "Ticket rated successfully";
     }
 
     @Transactional

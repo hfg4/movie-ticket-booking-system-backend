@@ -20,7 +20,7 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    @PostMapping("/book")
+    @PostMapping("/addNew")
     public ResponseEntity<Object> ticketBooking(@RequestBody TicketRequest ticketRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.ticketBooking(ticketRequest)); // ✅ instance call, added semicolon
     }
@@ -38,6 +38,11 @@ public class TicketController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Ticket>> getTicketsByUserId(@PathVariable Integer userId) {
         return ResponseEntity.ok(ticketService.getTicketsByUserId(userId));
+    }
+
+    @PutMapping("/{ticketId}/rate")
+    public ResponseEntity<String> rateTicket(@PathVariable Integer ticketId, @RequestParam Integer rating) {
+        return ResponseEntity.ok(ticketService.rateTicket(ticketId, rating));
     }
 
     @DeleteMapping("/cancel/{ticketId}")

@@ -39,8 +39,7 @@ public class Movie {
 
     private Date releaseDate;
 
-    @Enumerated(value = EnumType.STRING)
-    private Genre genre;
+    private String genre;
 
     @Enumerated(value = EnumType.STRING)
     private Language language;
@@ -64,6 +63,10 @@ public class Movie {
     @UpdateTimestamp
     @Column(nullable = false)
     private Timestamp updatedAt;
+
+    @Builder.Default
+    @Column(name = "is_banner")
+    private Boolean isBanner = false;
 
     @Override
     public final boolean equals(Object o) {

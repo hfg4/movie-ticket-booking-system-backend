@@ -30,8 +30,11 @@ public class ShowSeat {
     @Builder.Default
     private Boolean isFoodIncluded = false;
 
+    @Builder.Default
+    private Boolean isAvailable = true;
+
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "show_id")
     @JsonIgnore
     private Show show;
 

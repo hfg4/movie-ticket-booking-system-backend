@@ -16,11 +16,13 @@ public class UserInfoUserDetails implements UserDetails {
     private static final long serialVersionUID = -8773921465190832995L;
     private final String name;
     private final String password;
+    private final boolean isActive;
     private final List<GrantedAuthority> authorities;
 
     public UserInfoUserDetails(User userInfo) {
         name = userInfo.getEmail();
         password = userInfo.getPassword();
+        isActive = userInfo.getIsActive() != null ? userInfo.getIsActive() : true;
         authorities = userInfo.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toList());
@@ -39,6 +41,26 @@ public class UserInfoUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return isActive;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive;
     }
 
 }

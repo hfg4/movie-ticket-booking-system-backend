@@ -31,4 +31,8 @@ public class UserRequest {
 
     @NotBlank(message = "Role is required")
     private String roles;
+
+    private Boolean isOneTapEnabled;
+
+    private String paymentToken;
 }

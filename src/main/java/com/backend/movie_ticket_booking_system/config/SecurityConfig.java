@@ -34,6 +34,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter authFilter;
     private final UserInfoUserDetailsService userDetailsService;
+    private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
 
     @Value("${cors.allowed-origins:http://localhost:4200}")
     private String corsAllowedOrigins;
@@ -61,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/swagger-ui.html",
                                 "/swagger-ui/index.html",
                                 "/actuator/health"
                         ).permitAll()
@@ -69,7 +71,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/user/register",
                                 "/user/login",
-                                "/user/refresh-token"
+                                "/user/refresh-token",
+                                "/user/forgot-password",
+                                "/user/reset-password",
+                                "/login/oauth2/**",
+                                "/admin/dashboard/**"
                         ).permitAll()
 
                         // Public endpoints - Read-only operations
@@ -78,13 +84,14 @@ public class SecurityConfig {
                                 "/movie/name/**",
                                 "/theater/all",
                                 "/show/all",
-                                "/show/movie/**"
+                                "/show/movie/**",
+                                "/movie/*",
+                                "/show/*",
+                                "/theater/*"
                         ).permitAll()
 
                         // User endpoints - Accessible to all authenticated users
-                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-
-                        // Admin-only endpoints - Movie management
+                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
 
                         // Admin-only endpoints - Show management
@@ -94,7 +101,7 @@ public class SecurityConfig {
                         .requestMatchers("/theater/**").hasAuthority("ROLE_ADMIN")
 
                         // Ticket endpoints - Accessible to both users and admins
-                        .requestMatchers("/ticket/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/ticket/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()
@@ -108,6 +115,11 @@ public class SecurityConfig {
 
                 // JWT Filter - Before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // OAuth2 Login
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oauth2LoginSuccessHandler)
+                )
 
                 .build();
     }

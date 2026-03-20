@@ -68,4 +68,9 @@ public class MovieController {
     public ResponseEntity<String> deleteMovie(@PathVariable Integer movieId) {
         return ResponseEntity.ok(movieService.deleteMovie(movieId));
     }
+
+    @PutMapping("/{movieId}/banner")
+    public ResponseEntity<String> setMovieBanner(@PathVariable Integer movieId) {
+        return ResponseEntity.ok(movieService.setMovieBanner(movieId));
+    }
 }

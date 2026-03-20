@@ -45,6 +45,11 @@ public class User {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Builder.Default
+    private Boolean isOneTapEnabled = false;
+
+    private String paymentToken;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Timestamp createdAt;

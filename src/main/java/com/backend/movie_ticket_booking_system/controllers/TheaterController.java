@@ -1,6 +1,7 @@
 package com.backend.movie_ticket_booking_system.controllers;
 
 import com.backend.movie_ticket_booking_system.entities.Theater;
+import com.backend.movie_ticket_booking_system.entities.TheaterSeat;
 import com.backend.movie_ticket_booking_system.request.TheaterRequest;
 import com.backend.movie_ticket_booking_system.request.TheaterSeatRequest;
 import com.backend.movie_ticket_booking_system.services.TheaterService;
@@ -21,12 +22,12 @@ public class TheaterController {
     }
 
     @PostMapping("/addNew")
-    public ResponseEntity<String> addTheater(@RequestBody TheaterRequest request) {
+    public ResponseEntity<String> addTheater(@jakarta.validation.Valid @RequestBody TheaterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheater(request));
     }
 
     @PostMapping("/addTheaterSeat")
-    public ResponseEntity<String> addTheaterSeat(@RequestBody TheaterSeatRequest entryDto) {
+    public ResponseEntity<String> addTheaterSeat(@jakarta.validation.Valid @RequestBody TheaterSeatRequest entryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theaterService.addTheaterSeats(entryDto));
     }
 
@@ -46,12 +47,18 @@ public class TheaterController {
     }
 
     @PutMapping("/{theaterId}")
-    public ResponseEntity<String> updateTheater(@PathVariable Integer theaterId, @RequestBody TheaterRequest theaterRequest) {
+    public ResponseEntity<String> updateTheater(@PathVariable Integer theaterId, @jakarta.validation.Valid @RequestBody TheaterRequest theaterRequest) {
         return ResponseEntity.ok(theaterService.updateTheater(theaterId, theaterRequest));
     }
 
     @DeleteMapping("/{theaterId}")
     public ResponseEntity<String> deleteTheater(@PathVariable Integer theaterId) {
         return ResponseEntity.ok(theaterService.deleteTheater(theaterId));
+    }
+
+    @PutMapping("/{theaterId}/seats")
+    public ResponseEntity<List<TheaterSeat>> updateTheaterSeats(@PathVariable Integer theaterId, @RequestBody List<TheaterSeat> updatedSeats) {
+        theaterService.updateTheaterSeats(theaterId, updatedSeats);
+        return ResponseEntity.ok(theaterService.getTheaterById(theaterId).getTheaterSeatList());
     }
 }

@@ -3,11 +3,14 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD:hunganh250}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  sql:
+    init:
+      mode: never
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,6 +19,29 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - email
+              - profile
 
 springdoc:
   api-docs:
@@ -30,13 +56,12 @@ springdoc:
     docExpansion: list
 
 jwt:
-  secret: ${JWT_SECRET:}
+  secret: ${JWT_SECRET:c2VjcmV0LWtleS13aXRoLWVub3VnaC1iaXQtbGVuZ3RoLXByb3RlY3Rpb24=}
   expiration: 86400000
 cloudinary:
   cloud_name: ${CLOUD_NAME:}
   api_key: ${API_KEY:}
   api_secret: ${API_SECRET:}
-
 
 logging:
   level:
@@ -57,9 +82,7 @@ logging:
 server:
   port: 8080
   error:
-    include-message: always       # helpful in dev
+    include-message: always # helpful in dev
     include-binding-errors: always
-    include-stacktrace: on_param  # never in prod
+    include-stacktrace: on_param # never in prod
     include-exception: false
-
-

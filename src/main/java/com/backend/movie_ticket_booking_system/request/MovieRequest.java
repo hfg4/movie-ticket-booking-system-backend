@@ -16,19 +16,16 @@ public class MovieRequest {
     @Min(value = 1, message = "Duration must be at least 1 minute")
     private Integer duration;
 
-    @DecimalMin(value = "0.0", message = "Rating must be at least 0.0")
-    @DecimalMax(value = "10.0", message = "Rating must be at most 10.0")
-    private Double rating;
-
     @NotNull(message = "Release date is required")
     private Date releaseDate;
 
-    @NotNull(message = "Genre is required")
-    private Genre genre;
+    @NotBlank(message = "Genre is required")
+    private String genre;
 
     @NotNull(message = "Language is required")
     private Language language;
 
     private String description;
     private String movieImage;
+    private Boolean isBanner;
 }

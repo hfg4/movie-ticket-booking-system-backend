@@ -1,5 +1,6 @@
 package com.backend.movie_ticket_booking_system.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.backend.movie_ticket_booking_system.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,12 +47,15 @@ public class Ticket {
     @Builder.Default
     private List<ShowSeat> showSeats = new ArrayList<>();
 
+    private Integer rating;
+
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "show_id")
     private Show show;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Override
