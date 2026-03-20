@@ -4,6 +4,7 @@ import com.backend.movie_ticket_booking_system.repositories.MovieRepository;
 import com.backend.movie_ticket_booking_system.repositories.TicketRepository;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.entities.Ticket;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
-    @Autowired
-    private MovieRepository movieRepository;
 
-    @Autowired
-    private TicketRepository ticketRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final MovieRepository movieRepository;
+    private final TicketRepository ticketRepository;
+    private final UserRepository userRepository;
 
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -47,7 +45,7 @@ public class DashboardService {
         // 3. Revenue Today
         double revenueToday = allTickets.stream()
                 .filter(t -> t.getBookedAt() != null && t.getBookedAt().toLocalDateTime().isAfter(startOfDay) && t.getBookedAt().toLocalDateTime().isBefore(endOfDay))
-                .mapToDouble(t -> t.getTotalTicketsPrice().doubleValue())
+                .mapToDouble(Ticket::getTotalTicketsPrice)
                 .sum();
         stats.put("revenueToday", revenueToday);
 
@@ -70,7 +68,7 @@ public class DashboardService {
             if (t.getBookedAt() != null) {
                 LocalDate date = t.getBookedAt().toLocalDateTime().toLocalDate();
                 if (revenueMap.containsKey(date)) {
-                    revenueMap.put(date, revenueMap.get(date) + t.getTotalTicketsPrice().doubleValue());
+                    revenueMap.put(date, revenueMap.get(date) + t.getTotalTicketsPrice());
                 }
             }
         });
@@ -93,7 +91,7 @@ public class DashboardService {
         allTickets.forEach(t -> {
             if (t.getShow() != null && t.getShow().getMovie() != null) {
                 String name = t.getShow().getMovie().getMovieName();
-                movieRevenue.put(name, movieRevenue.getOrDefault(name, 0.0) + t.getTotalTicketsPrice().doubleValue());
+                movieRevenue.put(name, movieRevenue.getOrDefault(name, 0.0) + t.getTotalTicketsPrice());
                 movieViews.put(name, movieViews.getOrDefault(name, 0L) + 1);
             }
         });
@@ -117,7 +115,7 @@ public class DashboardService {
         allTickets.forEach(t -> {
             if (t.getShow() != null && t.getShow().getTheater() != null) {
                 String name = t.getShow().getTheater().getName();
-                theaterRevenue.put(name, theaterRevenue.getOrDefault(name, 0.0) + t.getTotalTicketsPrice().doubleValue());
+                theaterRevenue.put(name, theaterRevenue.getOrDefault(name, 0.0) + t.getTotalTicketsPrice());
             }
         });
 

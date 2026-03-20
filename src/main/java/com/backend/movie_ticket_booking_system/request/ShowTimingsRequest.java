@@ -6,6 +6,7 @@ import lombok.Data;
 import java.sql.Date;
 
 @Data
+@SuppressWarnings("unused")
 public class ShowTimingsRequest {
     private Date date;
     private Integer theaterId;

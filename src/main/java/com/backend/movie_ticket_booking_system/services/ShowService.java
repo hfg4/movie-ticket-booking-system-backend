@@ -11,23 +11,21 @@ import com.backend.movie_ticket_booking_system.repositories.ShowRepository;
 import com.backend.movie_ticket_booking_system.repositories.TheaterRepository;
 import com.backend.movie_ticket_booking_system.request.ShowRequest;
 import com.backend.movie_ticket_booking_system.request.ShowSeatRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ShowService {
 
-    @Autowired
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
-    @Autowired
-    private TheaterRepository theaterRepository;
+    private final TheaterRepository theaterRepository;
 
-    @Autowired
-    private ShowRepository showRepository;
+    private final ShowRepository showRepository;
 
     public String addShow(ShowRequest showRequest) {
         Show show = ShowConvertor.showDtoToShow(showRequest);
@@ -112,10 +110,10 @@ public class ShowService {
                 .orElseThrow(ShowDoesNotExist::new);
 
         if (showRequest.getShowStartTime() != null) {
-            show.setShowTime(showRequest.getShowStartTime());
+            show.setShowTime(java.sql.Time.valueOf(showRequest.getShowStartTime()));
         }
         if (showRequest.getShowDate() != null) {
-            show.setShowDate(showRequest.getShowDate());
+            show.setShowDate(java.sql.Date.valueOf(showRequest.getShowDate()));
         }
         if (showRequest.getMovieId() != null) {
             Movie movie = movieRepository.findByIdAndIsDeletedFalse(showRequest.getMovieId())
@@ -135,13 +133,13 @@ public class ShowService {
     public String deleteShow(Integer showId) {
         Show show = showRepository.findByShowIdAndIsDeletedFalse(showId)
                 .orElseThrow(ShowDoesNotExist::new);
-        
+
         show.setIsDeleted(true);
         showRepository.save(show);
         return "Show deleted successfully";
     }
 
-    public String updateShowSeats(Integer showId, List<ShowSeat> updatedSeats) {
+    public void updateShowSeats(Integer showId, List<ShowSeat> updatedSeats) {
         Optional<Show> showOpt = showRepository.findById(showId);
         if (showOpt.isEmpty()) {
             throw new ShowDoesNotExist();
@@ -165,6 +163,5 @@ public class ShowService {
         }
 
         showRepository.save(show);
-        return "Show seats updated successfully";
     }
 }

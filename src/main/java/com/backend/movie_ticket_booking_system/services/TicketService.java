@@ -14,25 +14,20 @@ import com.backend.movie_ticket_booking_system.repositories.TicketRepository;
 import com.backend.movie_ticket_booking_system.repositories.UserRepository;
 import com.backend.movie_ticket_booking_system.request.TicketRequest;
 import com.backend.movie_ticket_booking_system.response.TicketResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TicketService {
 
-    @Autowired
-    private TicketRepository ticketRepository;
-
-    @Autowired
-    private ShowRepository showRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final TicketRepository ticketRepository;
+    private final ShowRepository showRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public TicketResponse ticketBooking(TicketRequest ticketRequest) {

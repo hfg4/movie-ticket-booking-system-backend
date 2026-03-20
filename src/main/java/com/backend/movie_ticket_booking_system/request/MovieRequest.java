@@ -20,7 +20,7 @@ public class MovieRequest {
     private Date releaseDate;
 
     @NotBlank(message = "Genre is required")
-    private String genre;
+    private Genre genre;
 
     @NotNull(message = "Language is required")
     private Language language;
