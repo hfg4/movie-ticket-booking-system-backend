@@ -84,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/movie/all",
                                 "/movie/name/**",
+                                "/movie/actor/**",
                                 "/theater/all",
                                 "/show/all",
                                 "/show/movie/**",

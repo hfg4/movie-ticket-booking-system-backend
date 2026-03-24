@@ -118,6 +118,14 @@ public class MovieService {
         return movie;
     }
 
+    public List<Movie> searchMoviesByActor(String actorName) {
+        List<Movie> movies = movieRepository.findByActorsContainingIgnoreCaseAndIsDeletedFalse(actorName);
+        for (Movie movie : movies) {
+            movie.setRating(calculateAverageRating(movie.getId()));
+        }
+        return movies;
+    }
+
     public String updateMovie(Integer movieId, MovieRequest movieRequest) {
         Optional<Movie> movieOpt = movieRepository.findByIdAndIsDeletedFalse(movieId);
 
@@ -138,7 +146,10 @@ public class MovieService {
             movie.setReleaseDate(movieRequest.getReleaseDate());
         }
         if (movieRequest.getGenre() != null) {
-            movie.setGenre(Genre.valueOf(movieRequest.getGenre()));
+            movie.setGenre(movieRequest.getGenre());
+        }
+        if (movieRequest.getActors() != null) {
+            movie.setActors(movieRequest.getActors());
         }
         if (movieRequest.getLanguage() != null) {
             movie.setLanguage(movieRequest.getLanguage());

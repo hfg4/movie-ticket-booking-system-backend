@@ -7,6 +7,8 @@ import com.backend.movie_ticket_booking_system.entities.Ticket;
 import com.backend.movie_ticket_booking_system.entities.User;
 import com.backend.movie_ticket_booking_system.exceptions.SeatNotAvailable;
 import com.backend.movie_ticket_booking_system.exceptions.ShowDoesNotExist;
+import com.backend.movie_ticket_booking_system.exceptions.TheaterIsClosed;
+import com.backend.movie_ticket_booking_system.exceptions.TheaterNoSeatLeft;
 import com.backend.movie_ticket_booking_system.exceptions.TicketDoesNotExist;
 import com.backend.movie_ticket_booking_system.exceptions.UserDoesNotExist;
 import com.backend.movie_ticket_booking_system.repositories.ShowRepository;
@@ -18,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +39,17 @@ public class TicketService {
         Show show = showRepository.findById(ticketRequest.getShowId())
                 .orElseThrow(ShowDoesNotExist::new);
 
+        // Check if the show time is too close (e.g., within 30 minutes)
+        java.time.LocalDate date = show.getShowDate().toLocalDate();
+        LocalTime time = show.getShowTime().toLocalTime();
+        LocalDateTime showDateTime = LocalDateTime.of(date, time);
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+        
+        // Prevent booking if show already started or is within 30 minutes
+        if (now.plusMinutes(30).isAfter(showDateTime)) {
+            throw new TheaterIsClosed();
+        }
+
         User user = userRepository.findById(ticketRequest.getUserId())
                 .orElseThrow(UserDoesNotExist::new);
 
@@ -43,6 +59,15 @@ public class TicketService {
 
         if (requestedSeats.size() != ticketRequest.getRequestSeats().size()) {
             throw new SeatNotAvailable();
+        }
+        
+        // Count available seats to check if theater has no seats left
+        long totalAvailableSeats = show.getShowSeatList().stream()
+                .filter(ShowSeat::getIsAvailable)
+                .count();
+                
+        if (totalAvailableSeats < ticketRequest.getRequestSeats().size()) {
+            throw new TheaterNoSeatLeft();
         }
 
         // Verify if any of the locked seats are already booked (isAvailable = false)
@@ -111,6 +136,34 @@ public class TicketService {
     public String cancelTicket(Integer ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(TicketDoesNotExist::new);
+
+        // Check if it's too late to cancel (e.g., within 1 hour before show or already started)
+        Show show = ticket.getShow();
+        java.time.LocalDate date = show.getShowDate().toLocalDate();
+        LocalTime time = show.getShowTime().toLocalTime();
+        LocalDateTime showDateTime = LocalDateTime.of(date, time);
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+
+        if (now.plusHours(1).isAfter(showDateTime)) {
+            throw new RuntimeException("Cannot cancel ticket within 1 hour before the show starts or after it has started.");
+        }
+        
+        // Mark all seats associated with this ticket as available again
+        List<ShowSeat> showSeats = ticket.getShowSeats();
+        for (ShowSeat seat : showSeats) {
+            seat.setIsAvailable(Boolean.TRUE);
+        }
+
+        // Remove the ticket reference from the user and show lists 
+        User user = ticket.getUser();
+        if (user != null) {
+            user.getTicketList().remove(ticket);
+        }
+        
+        show.getTicketList().remove(ticket);
+
+        // Disconnect the show seats from the ticket since it's a many-to-many managed by the ticket
+        ticket.getShowSeats().clear();
 
         ticketRepository.delete(ticket);
 
