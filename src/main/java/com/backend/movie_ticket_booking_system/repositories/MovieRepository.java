@@ -16,4 +16,5 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     Page<Movie> findAllByIsDeletedFalse(Pageable pageable);
     List<Movie> findAllByIsDeletedFalse();
     Optional<Movie> findByIdAndIsDeletedFalse(Integer id);
+    List<Movie> findByActorsContainingIgnoreCaseAndIsDeletedFalse(String actors);
 }
