@@ -41,6 +41,12 @@ public class ShowSeat {
     @JsonIgnore
     private Show show;
 
+    @Column(name = "held_until")
+    private java.time.LocalDateTime heldUntil;
+
+    @Column(name = "held_by_user_id")
+    private Integer heldByUserId;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

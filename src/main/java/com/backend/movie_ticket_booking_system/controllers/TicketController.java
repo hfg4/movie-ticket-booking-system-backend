@@ -25,6 +25,16 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.ticketBooking(ticketRequest)); // ✅ instance call, added semicolon
     }
 
+    @PostMapping("/hold")
+    public ResponseEntity<String> holdSeats(@RequestBody TicketRequest ticketRequest) {
+        return ResponseEntity.ok(ticketService.holdSeats(ticketRequest));
+    }
+
+    @PostMapping("/release")
+    public ResponseEntity<String> releaseSeats(@RequestBody TicketRequest ticketRequest) {
+        return ResponseEntity.ok(ticketService.releaseSeats(ticketRequest));
+    }
+
     @GetMapping("/{ticketId}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Integer ticketId) {
         return ResponseEntity.ok(ticketService.getTicketById(ticketId));

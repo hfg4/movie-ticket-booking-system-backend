@@ -45,10 +45,17 @@ public class TicketService {
             throw new SeatNotAvailable();
         }
 
-        // Verify if any of the locked seats are already booked (isAvailable = false)
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        // Verify if any of the locked seats are already booked (isAvailable = false) or held by someone else
         for (ShowSeat rs : requestedSeats) {
             if (Boolean.FALSE.equals(rs.getIsAvailable())) {
                 throw new SeatNotAvailable();
+            }
+            if (rs.getHeldUntil() != null && now.isBefore(rs.getHeldUntil())) {
+                if (!rs.getHeldByUserId().equals(user.getId())) {
+                    throw new SeatNotAvailable(); // held by someone else
+                }
             }
         }
 
@@ -56,9 +63,11 @@ public class TicketService {
                 .mapToDouble(ShowSeat::getPrice)
                 .sum();
 
-        // Mark seats as unavailable
+        // Mark seats as unavailable and clear hold data
         for (ShowSeat ss : requestedSeats) {
             ss.setIsAvailable(Boolean.FALSE);
+            ss.setHeldUntil(null);
+            ss.setHeldByUserId(null);
         }
 
         Ticket ticket = Ticket.builder()
@@ -115,6 +124,55 @@ public class TicketService {
         ticketRepository.delete(ticket);
 
         return "Ticket cancelled successfully";
+    }
+
+    @Transactional
+    public String holdSeats(TicketRequest ticketRequest) {
+        Show show = showRepository.findById(ticketRequest.getShowId())
+                .orElseThrow(ShowDoesNotExist::new);
+        User user = userRepository.findById(ticketRequest.getUserId())
+                .orElseThrow(UserDoesNotExist::new);
+
+        List<ShowSeat> requestedSeats = ticketRepository.findAndLockByShowIdAndSeatNos(
+                show.getShowId(), ticketRequest.getRequestSeats());
+
+        if (requestedSeats.size() != ticketRequest.getRequestSeats().size()) {
+            throw new SeatNotAvailable();
+        }
+
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        for (ShowSeat ss : requestedSeats) {
+            if (Boolean.FALSE.equals(ss.getIsAvailable())) {
+                throw new SeatNotAvailable();
+            }
+            if (ss.getHeldUntil() != null && now.isBefore(ss.getHeldUntil())) {
+                if (!ss.getHeldByUserId().equals(user.getId())) {
+                    throw new SeatNotAvailable(); // held by someone else
+                }
+            }
+        }
+
+        java.time.LocalDateTime holdEnd = now.plusMinutes(1);
+        for (ShowSeat ss : requestedSeats) {
+            ss.setHeldUntil(holdEnd);
+            ss.setHeldByUserId(user.getId());
+        }
+        
+        return String.valueOf(holdEnd.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+    }
+
+    @Transactional
+    public String releaseSeats(TicketRequest ticketRequest) {
+        List<ShowSeat> requestedSeats = ticketRepository.findAndLockByShowIdAndSeatNos(
+                ticketRequest.getShowId(), ticketRequest.getRequestSeats());
+
+        for (ShowSeat ss : requestedSeats) {
+            if (ss.getHeldByUserId() != null && ss.getHeldByUserId().equals(ticketRequest.getUserId())) {
+                ss.setHeldUntil(null);
+                ss.setHeldByUserId(null);
+            }
+        }
+        return "Đã hủy giữ ghế";
     }
 
 }
