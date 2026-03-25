@@ -88,6 +88,11 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMovieByName(movieName));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Movie>> searchMovies(@RequestParam("name") String movieName) {
+        return ResponseEntity.ok(movieService.searchMovies(movieName));
+    }
+
     @PutMapping("/{movieId}")
     public ResponseEntity<String> updateMovie(@PathVariable Integer movieId, @Valid @RequestBody MovieRequest movieRequest) {
         return ResponseEntity.ok(movieService.updateMovie(movieId, movieRequest));

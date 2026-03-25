@@ -118,6 +118,14 @@ public class MovieService {
         return movie;
     }
 
+    public List<Movie> searchMovies(String movieName) {
+        List<Movie> movies = movieRepository.findByMovieNameContainingIgnoreCaseAndIsDeletedFalse(movieName);
+        for (Movie movie : movies) {
+            movie.setRating(calculateAverageRating(movie.getId()));
+        }
+        return movies;
+    }
+
     public String updateMovie(Integer movieId, MovieRequest movieRequest) {
         Optional<Movie> movieOpt = movieRepository.findByIdAndIsDeletedFalse(movieId);
 

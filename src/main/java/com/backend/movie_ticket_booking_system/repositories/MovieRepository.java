@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
     Movie findByMovieNameAndIsDeletedFalse(String name);
+    List<Movie> findByMovieNameContainingIgnoreCaseAndIsDeletedFalse(String movieName);
     List<Movie> findAllByIsDeletedFalse(Sort sort);
     Page<Movie> findAllByIsDeletedFalse(Pageable pageable);
     List<Movie> findAllByIsDeletedFalse();
