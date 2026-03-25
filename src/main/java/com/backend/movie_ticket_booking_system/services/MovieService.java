@@ -138,7 +138,7 @@ public class MovieService {
             movie.setReleaseDate(movieRequest.getReleaseDate());
         }
         if (movieRequest.getGenre() != null) {
-            movie.setGenre(Genre.valueOf(movieRequest.getGenre()));
+            movie.setGenre(movieRequest.getGenre());
         }
         if (movieRequest.getLanguage() != null) {
             movie.setLanguage(movieRequest.getLanguage());
@@ -146,8 +146,20 @@ public class MovieService {
         if (movieRequest.getDescription() != null) {
             movie.setDescription(movieRequest.getDescription());
         }
+        if (movieRequest.getDirector() != null) {
+            movie.setDirector(movieRequest.getDirector());
+        }
+        if (movieRequest.getActors() != null) {
+            movie.setActors(movieRequest.getActors());
+        }
+        if (movieRequest.getAgeRequirement() != null) {
+            movie.setAgeRequirement(movieRequest.getAgeRequirement());
+        }
         if(movieRequest.getMovieImage() != null){
             movie.setMovieImage(movieRequest.getMovieImage());
+        }
+        if (movieRequest.getTrailerUrl() != null) {
+            movie.setTrailerUrl(movieRequest.getTrailerUrl());
         }
         if (movieRequest.getIsBanner() != null) {
             movie.setIsBanner(movieRequest.getIsBanner());

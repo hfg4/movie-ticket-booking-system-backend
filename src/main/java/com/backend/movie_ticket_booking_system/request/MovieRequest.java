@@ -20,7 +20,7 @@ public class MovieRequest {
     private Date releaseDate;
 
     @NotBlank(message = "Genre is required")
-    private Genre genre;
+    private String genre;
 
     @NotNull(message = "Language is required")
     private Language language;
@@ -28,4 +28,11 @@ public class MovieRequest {
     private String description;
     private String movieImage;
     private Boolean isBanner;
+
+    private String director;
+    private String actors;
+
+    private String trailerUrl;
+
+    private Integer ageRequirement;
 }

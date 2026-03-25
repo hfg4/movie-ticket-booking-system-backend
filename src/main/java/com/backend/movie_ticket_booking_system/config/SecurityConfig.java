@@ -87,7 +87,8 @@ public class SecurityConfig {
                                 "/show/movie/**",
                                 "/movie/*",
                                 "/show/*",
-                                "/theater/*"
+                                "/theater/*",
+                                "/upload/**"
                         ).permitAll()
 
                         // User endpoints - Accessible to all authenticated users

@@ -1,6 +1,7 @@
 package com.backend.movie_ticket_booking_system.services;
 
 import com.backend.movie_ticket_booking_system.entities.Movie;
+
 import com.backend.movie_ticket_booking_system.enums.Language;
 import com.backend.movie_ticket_booking_system.exceptions.MovieAlreadyExist;
 import com.backend.movie_ticket_booking_system.exceptions.MovieDoesNotExist;
@@ -49,7 +50,7 @@ class MovieServiceTest {
         movieRequest.setMovieName("Avengers: Endgame");
         movieRequest.setDuration(181);
         movieRequest.setReleaseDate(Date.valueOf("2024-04-26"));
-        movieRequest.setGenre("Action");
+        movieRequest.setGenre("ACTION");
         movieRequest.setLanguage(Language.ENGLISH);
         movieRequest.setDescription("The Avengers assemble once more.");
 
@@ -59,7 +60,7 @@ class MovieServiceTest {
                 .duration(181)
                 .rating(4.5)
                 .language(Language.ENGLISH)
-                .genre("Action")
+                .genre("ACTION")
                 .isDeleted(false)
                 .build();
     }

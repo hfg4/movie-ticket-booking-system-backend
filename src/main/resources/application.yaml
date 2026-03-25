@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -59,9 +63,9 @@ jwt:
   secret: ${JWT_SECRET:c2VjcmV0LWtleS13aXRoLWVub3VnaC1iaXQtbGVuZ3RoLXByb3RlY3Rpb24=}
   expiration: 86400000
 cloudinary:
-  cloud_name: ${CLOUD_NAME:}
-  api_key: ${API_KEY:}
-  api_secret: ${API_SECRET:}
+  cloud_name: ${CLOUD_NAME:dxtwzexxu}
+  api_key: ${API_KEY:945328493968633}
+  api_secret: ${API_SECRET:Bmq1mZNBQLzOfMNhUgCbxtzX5lo}
 
 logging:
   level:

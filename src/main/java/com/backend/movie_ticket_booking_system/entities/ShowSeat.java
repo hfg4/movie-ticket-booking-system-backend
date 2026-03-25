@@ -25,6 +25,9 @@ public class ShowSeat {
     @JoinColumn(name = "theater_seat_id")
     private TheaterSeat theaterSeat;
 
+    @Enumerated(value = EnumType.STRING)
+    private com.backend.movie_ticket_booking_system.enums.SeatType seatType;
+
     private Double price;
 
     @Builder.Default

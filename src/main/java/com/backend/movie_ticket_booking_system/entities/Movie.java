@@ -39,7 +39,7 @@ public class Movie {
 
     private Date releaseDate;
 
-    private Genre genre;
+    private String genre;
 
     @Enumerated(value = EnumType.STRING)
     private Language language;
@@ -52,6 +52,15 @@ public class Movie {
 
     private String description;
     private String movieImage;
+
+    private String director;
+
+    @Column(columnDefinition = "TEXT")
+    private String actors;
+
+    private String trailerUrl;
+
+    private Integer ageRequirement;
 
     @Builder.Default
     private Boolean isDeleted = false;

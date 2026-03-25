@@ -15,6 +15,10 @@ public class MovieConvertor {
                 .releaseDate(movieRequest.getReleaseDate())
                 .description(movieRequest.getDescription())
                 .movieImage(movieRequest.getMovieImage())
+                .director(movieRequest.getDirector())
+                .actors(movieRequest.getActors())
+                .trailerUrl(movieRequest.getTrailerUrl())
+                .ageRequirement(movieRequest.getAgeRequirement() != null ? movieRequest.getAgeRequirement() : 0)
                 .isBanner(movieRequest.getIsBanner() != null ? movieRequest.getIsBanner() : false)
                 .build();
     }

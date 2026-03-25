@@ -71,6 +71,7 @@ public class ShowService {
         for (TheaterSeat theaterSeat : theaterSeatList) {
             ShowSeat showSeat = new ShowSeat();
             showSeat.setTheaterSeat(theaterSeat);
+            showSeat.setSeatType(theaterSeat.getSeatType());
 
             if (theaterSeat.getSeatType().equals(SeatType.STANDARD)) {
                 showSeat.setPrice((double) showSeatRequest.getPriceOfClassicSeat());
@@ -153,9 +154,9 @@ public class ShowService {
                 if (currentSeat.getTheaterSeat() != null && updatedSeat.getTheaterSeat() != null &&
                     currentSeat.getTheaterSeat().getSeatNo().equals(updatedSeat.getTheaterSeat().getSeatNo())) {
                     currentSeat.setPrice(updatedSeat.getPrice());
-                    // Important: If types changed, we might need to update the nested object too
-                    if (currentSeat.getTheaterSeat() != null && updatedSeat.getTheaterSeat() != null) {
-                        currentSeat.getTheaterSeat().setSeatType(updatedSeat.getTheaterSeat().getSeatType());
+                    // Important: Instead of changing the physical theater seat, we only change the show-specific seatType
+                    if (updatedSeat.getSeatType() != null) {
+                        currentSeat.setSeatType(updatedSeat.getSeatType());
                     }
                     break;
                 }
