@@ -74,14 +74,17 @@ public class SecurityConfig {
                                 "/user/refresh-token",
                                 "/user/forgot-password",
                                 "/user/reset-password",
-                                "/login/oauth2/**",
-                                "/admin/dashboard/**"
+                                "/login/oauth2/**"
                         ).permitAll()
+                        
+                        // Admin Dashboard endpoint
+                        .requestMatchers("/admin/dashboard/**").hasAuthority("ROLE_ADMIN")
 
                         // Public endpoints - Read-only operations
                         .requestMatchers(
                                 "/movie/all",
                                 "/movie/name/**",
+                                "/movie/actor/**",
                                 "/theater/all",
                                 "/show/all",
                                 "/show/movie/**",

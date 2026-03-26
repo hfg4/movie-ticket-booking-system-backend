@@ -25,6 +25,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
+    @ExceptionHandler({
+        TheaterNoSeatLeft.class,
+        TheaterIsClosed.class,
+        SeatNotAvailable.class
+    })
+    public ResponseEntity<String> handleBookingExceptions(RuntimeException e) {
+        log.warn("Booking Exception: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException e) {
         String errors = e.getBindingResult().getFieldErrors().stream()

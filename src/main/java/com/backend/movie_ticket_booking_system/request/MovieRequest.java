@@ -19,18 +19,18 @@ public class MovieRequest {
     @NotNull(message = "Release date is required")
     private Date releaseDate;
 
-    @NotBlank(message = "Genre is required")
-    private String genre;
+    @NotNull(message = "Genre is required")
+    private Genre genre;
 
     @NotNull(message = "Language is required")
     private Language language;
 
+    private String actors;
+
     private String description;
     private String movieImage;
     private Boolean isBanner;
-
     private String director;
-    private String actors;
 
     private String trailerUrl;
 
