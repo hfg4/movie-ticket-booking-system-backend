@@ -34,7 +34,9 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequest userEntryDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(userEntryDto));
+        userService.addUser(userEntryDto);
+        String token = jwtService.generateToken(userEntryDto.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
 
     @PostMapping("/login")
