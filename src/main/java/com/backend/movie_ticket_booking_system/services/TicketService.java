@@ -33,6 +33,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final ShowRepository showRepository;
     private final UserRepository userRepository;
+    private final CouponService couponService;
 
     @Transactional
     public TicketResponse ticketBooking(TicketRequest ticketRequest) {
@@ -45,8 +46,8 @@ public class TicketService {
         LocalDateTime showDateTime = LocalDateTime.of(date, time);
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         
-        // Prevent booking if show already started or is within 30 minutes
-        if (now.plusMinutes(30).isAfter(showDateTime)) {
+        // Prevent booking if show already started or is within 5 minutes
+        if (now.plusMinutes(5).isAfter(showDateTime)) {
             throw new TheaterIsClosed();
         }
 
@@ -85,6 +86,20 @@ public class TicketService {
         Double totalAmount = requestedSeats.stream()
                 .mapToDouble(ShowSeat::getPrice)
                 .sum();
+
+        // Apply coupon if provided
+        if (ticketRequest.getCouponCode() != null && !ticketRequest.getCouponCode().trim().isEmpty()) {
+            try {
+                Double discountPercent = couponService.validateCoupon(ticketRequest.getCouponCode());
+                if (discountPercent > 0) {
+                    double discountAmount = totalAmount * (discountPercent / 100.0);
+                    totalAmount = totalAmount - discountAmount;
+                    couponService.applyCouponInfo(ticketRequest.getCouponCode());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi mã giảm giá: " + e.getMessage());
+            }
+        }
 
         // Mark seats as unavailable and clear hold data
         for (ShowSeat ss : requestedSeats) {

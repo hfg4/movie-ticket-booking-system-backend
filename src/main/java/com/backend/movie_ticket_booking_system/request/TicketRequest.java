@@ -15,4 +15,6 @@ public class TicketRequest {
 
     @NotEmpty(message = "At least one seat must be selected")
     private List<String> requestSeats;
+
+    private String couponCode;
 }

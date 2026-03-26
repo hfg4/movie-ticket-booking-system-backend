@@ -1,6 +1,5 @@
 package com.backend.movie_ticket_booking_system.request;
 
-import com.backend.movie_ticket_booking_system.enums.Genre;
 import com.backend.movie_ticket_booking_system.enums.Language;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -19,8 +18,8 @@ public class MovieRequest {
     @NotNull(message = "Release date is required")
     private Date releaseDate;
 
-    @NotNull(message = "Genre is required")
-    private Genre genre;
+    @NotBlank(message = "Genre is required")
+    private String genre;
 
     @NotNull(message = "Language is required")
     private Language language;
