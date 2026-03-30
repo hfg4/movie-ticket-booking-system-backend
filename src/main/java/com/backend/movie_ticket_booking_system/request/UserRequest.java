@@ -18,6 +18,8 @@ public class UserRequest {
     @Max(value = 150, message = "Age must be less than 150")
     private Integer age;
 
+    private java.time.LocalDate dateOfBirth;
+
     private String address;
 
     @Pattern(regexp = "^[0-9]{10}$", message = "Mobile number must be 10 digits")

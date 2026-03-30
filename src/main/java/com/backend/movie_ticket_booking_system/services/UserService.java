@@ -82,7 +82,10 @@ public class UserService {
         if (userRequest.getName() != null) {
             user.setName(userRequest.getName());
         }
-        if (userRequest.getAge() != null) {
+        if (userRequest.getDateOfBirth() != null) {
+            user.setDateOfBirth(userRequest.getDateOfBirth());
+            user.setAge(java.time.Period.between(userRequest.getDateOfBirth(), java.time.LocalDate.now()).getYears());
+        } else if (userRequest.getAge() != null) {
             user.setAge(userRequest.getAge());
         }
         if (userRequest.getAddress() != null) {

@@ -31,6 +31,8 @@ public class User {
 
     private Integer age;
 
+    private java.time.LocalDate dateOfBirth;
+
     private String address;
 
     @Enumerated(value = EnumType.STRING)

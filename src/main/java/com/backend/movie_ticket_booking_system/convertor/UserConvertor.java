@@ -12,9 +12,15 @@ public class UserConvertor {
 
     public static User userDtoToUser(UserRequest userRequest, String password) {
 
+        Integer computedAge = userRequest.getAge();
+        if (userRequest.getDateOfBirth() != null) {
+            computedAge = java.time.Period.between(userRequest.getDateOfBirth(), java.time.LocalDate.now()).getYears();
+        }
+
         return User.builder()
                 .name(userRequest.getName())
-                .age(userRequest.getAge())
+                .dateOfBirth(userRequest.getDateOfBirth())
+                .age(computedAge)
                 .address(userRequest.getAddress())
                 .gender(userRequest.getGender())
                 .mobileNo(userRequest.getMobileNo())
