@@ -37,4 +37,6 @@ public class UserRequest {
     private Boolean isOneTapEnabled;
 
     private String paymentToken;
+
+    private String userImage;
 }

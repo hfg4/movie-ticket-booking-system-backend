@@ -46,6 +46,8 @@ public class User {
 
     private String password;
 
+    private String userImage;
+
     @Builder.Default
     private Boolean isActive = true;
 

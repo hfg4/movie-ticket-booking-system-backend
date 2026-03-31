@@ -9,7 +9,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/movie_booking?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:hunganh250}
+    password: ${DB_PASSWORD:your-db-password}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   sql:
@@ -60,12 +60,12 @@ springdoc:
     docExpansion: list
 
 jwt:
-  secret: ${JWT_SECRET:c2VjcmV0LWtleS13aXRoLWVub3VnaC1iaXQtbGVuZ3RoLXByb3RlY3Rpb24=}
+  secret: ${JWT_SECRET:your-base64-encoded-secret-key-that-is-very-long}
   expiration: 86400000
 cloudinary:
-  cloud_name: ${CLOUD_NAME:dxtwzexxu}
-  api_key: ${API_KEY:945328493968633}
-  api_secret: ${API_SECRET:Bmq1mZNBQLzOfMNhUgCbxtzX5lo}
+  cloud_name: ${CLOUD_NAME:your-cloud-name}
+  api_key: ${API_KEY:your-api-key}
+  api_secret: ${API_SECRET:your-api-secret}
 
 logging:
   level:

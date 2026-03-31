@@ -126,6 +126,9 @@ public class UserService {
         if (userRequest.getPaymentToken() != null) {
             user.setPaymentToken(userRequest.getPaymentToken());
         }
+        if (userRequest.getUserImage() != null) {
+            user.setUserImage(userRequest.getUserImage());
+        }
 
         userRepository.save(user);
         return "User updated successfully";
