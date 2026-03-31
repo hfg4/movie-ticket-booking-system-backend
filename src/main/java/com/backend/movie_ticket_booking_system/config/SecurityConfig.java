@@ -78,11 +78,16 @@ public class SecurityConfig {
                                 "/user/reset-password",
                                 "/user/email/**",
                                 "/user/*/password",
-                                "/login/oauth2/**"
+                                "/login/oauth2/**",
+                                "/coupon/validate"
                         ).permitAll()
                         
-                        // Admin Dashboard endpoint
+                        // Admin-only endpoints - Management
                         .requestMatchers("/admin/dashboard/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/user/all").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/user/*/toggleLock").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/user/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/coupon/**").hasAuthority("ROLE_ADMIN")
 
                         // Public endpoints - Read-only operations
                         .requestMatchers(
@@ -98,18 +103,15 @@ public class SecurityConfig {
                                 "/upload/**"
                         ).permitAll()
 
-                        // User endpoints - Accessible to all authenticated users
-                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
+                        // Admin-only management - Restore strictly enforced rules
                         .requestMatchers("/movie/**").hasAuthority("ROLE_ADMIN")
-
-                        // Admin-only endpoints - Show management
                         .requestMatchers("/show/**").hasAuthority("ROLE_ADMIN")
-
-                        // Admin-only endpoints - Theater management
                         .requestMatchers("/theater/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
 
-                        // Ticket endpoints - Accessible to both users and admins
+                        // Ticket and User profile - Authenticated (Customer or Admin)
                         .requestMatchers("/ticket/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
+                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated()
