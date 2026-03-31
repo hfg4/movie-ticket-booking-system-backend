@@ -37,4 +37,24 @@ public class DashboardController {
     public ResponseEntity<List<Map<String, Object>>> getRevenueByTheater() {
         return ResponseEntity.ok(dashboardService.getRevenueByTheater());
     }
+
+    @GetMapping("/notifications")
+    public ResponseEntity<List<Map<String, Object>>> getNotifications(@org.springframework.security.core.annotation.AuthenticationPrincipal com.backend.movie_ticket_booking_system.config.UserInfoUserDetails userDetails) {
+        if (userDetails == null) return ResponseEntity.status(401).build();
+        return ResponseEntity.ok(dashboardService.getNotifications(userDetails.getUserId()));
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/mark-read/{notificationId}")
+    public ResponseEntity<Void> markRead(@org.springframework.security.core.annotation.AuthenticationPrincipal com.backend.movie_ticket_booking_system.config.UserInfoUserDetails userDetails, @org.springframework.web.bind.annotation.PathVariable String notificationId) {
+        if (userDetails == null) return ResponseEntity.status(401).build();
+        dashboardService.markRead(userDetails.getUserId(), notificationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/mark-all-read")
+    public ResponseEntity<Void> markAllRead(@org.springframework.security.core.annotation.AuthenticationPrincipal com.backend.movie_ticket_booking_system.config.UserInfoUserDetails userDetails) {
+        if (userDetails == null) return ResponseEntity.status(401).build();
+        dashboardService.markAllRead(userDetails.getUserId());
+        return ResponseEntity.ok().build();
+    }
 }

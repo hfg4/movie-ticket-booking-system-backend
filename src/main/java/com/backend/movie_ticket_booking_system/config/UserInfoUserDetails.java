@@ -14,18 +14,24 @@ public class UserInfoUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = -8773921465190832995L;
+    private final Integer userId;
     private final String name;
     private final String password;
     private final boolean isActive;
     private final List<GrantedAuthority> authorities;
 
     public UserInfoUserDetails(User userInfo) {
+        userId = userInfo.getId();
         name = userInfo.getEmail();
         password = userInfo.getPassword();
         isActive = userInfo.getIsActive() != null ? userInfo.getIsActive() : true;
         authorities = userInfo.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toList());
+    }
+
+    public Integer getUserId() {
+        return userId;
     }
 
     @Override
