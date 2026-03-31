@@ -76,6 +76,8 @@ public class SecurityConfig {
                                 "/user/refresh-token",
                                 "/user/forgot-password",
                                 "/user/reset-password",
+                                "/user/email/**",
+                                "/user/*/password",
                                 "/login/oauth2/**"
                         ).permitAll()
                         
