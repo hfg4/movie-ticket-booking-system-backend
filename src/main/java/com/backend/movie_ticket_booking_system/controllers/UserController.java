@@ -87,6 +87,11 @@ public class UserController {
         return ResponseEntity.ok(userService.toggleOneTap(userId));
     }
 
+    @PostMapping("/{userId}/favorite/{movieId}")
+    public ResponseEntity<String> toggleFavoriteMovie(@PathVariable Integer userId, @PathVariable Integer movieId) {
+        return ResponseEntity.ok(userService.toggleFavoriteMovie(userId, movieId));
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));

@@ -218,7 +218,7 @@ public class TicketService {
             }
         }
 
-        java.time.LocalDateTime holdEnd = now.plusMinutes(1);
+        java.time.LocalDateTime holdEnd = now.plusMinutes(5);
         for (ShowSeat ss : requestedSeats) {
             ss.setHeldUntil(holdEnd);
             ss.setHeldByUserId(user.getId());

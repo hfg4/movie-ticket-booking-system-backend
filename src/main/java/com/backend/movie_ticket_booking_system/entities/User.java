@@ -75,6 +75,16 @@ public class User {
     @JsonIgnore
     private List<Ticket> ticketList = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_favorite_movies",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
+    @ToString.Exclude
+    @Builder.Default
+    private List<Movie> favoriteMovies = new ArrayList<>();
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

@@ -14,20 +14,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.backend.movie_ticket_booking_system.entities.Movie;
+import com.backend.movie_ticket_booking_system.repositories.MovieRepository;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MovieRepository movieRepository;
     private final PasswordEncoder passwordEncoder;
     private final com.backend.movie_ticket_booking_system.repositories.PasswordResetTokenRepository tokenRepository;
     private final org.springframework.mail.javamail.JavaMailSender mailSender;
 
     public UserService(UserRepository userRepository, 
+                       MovieRepository movieRepository,
                        PasswordEncoder passwordEncoder, 
                        com.backend.movie_ticket_booking_system.repositories.PasswordResetTokenRepository tokenRepository, 
                        org.springframework.mail.javamail.JavaMailSender mailSender) {
         this.userRepository = userRepository;
+        this.movieRepository = movieRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.mailSender = mailSender;
@@ -272,4 +277,29 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public String toggleFavoriteMovie(Integer userId, Integer movieId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new UserDoesNotExist();
+        }
+        User user = userOpt.get();
+
+        Optional<Movie> movieOpt = movieRepository.findById(movieId);
+        if (movieOpt.isEmpty()) {
+            throw new RuntimeException("Phim không tồn tại");
+        }
+        Movie movie = movieOpt.get();
+
+        List<Movie> favorites = user.getFavoriteMovies();
+        boolean removed = favorites.removeIf(m -> m.getId().equals(movieId));
+        
+        if (removed) {
+            userRepository.save(user);
+            return "Đã xóa khỏi phim yêu thích";
+        } else {
+            favorites.add(movie);
+            userRepository.save(user);
+            return "Đã thêm vào phim yêu thích";
+        }
+    }
 }

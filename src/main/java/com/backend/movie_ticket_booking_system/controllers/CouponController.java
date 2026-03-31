@@ -22,6 +22,15 @@ public class CouponController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody CouponRequest req) {
+        try {
+            return ResponseEntity.ok(couponService.updateCoupon(id, req));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(couponService.getAllCoupons());
@@ -46,9 +55,9 @@ public class CouponController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<?> validate(@RequestParam String code) {
+    public ResponseEntity<?> validate(@RequestParam String code, @RequestParam(required = false) Integer movieId) {
         try {
-            Double discount = couponService.validateCoupon(code);
+            Double discount = couponService.validateCouponForMovie(code, movieId);
             return ResponseEntity.ok(discount);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

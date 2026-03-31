@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +34,15 @@ public class Coupon {
 
     @Builder.Default
     private Boolean isActive = true;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "coupon_movies",
+        joinColumns = @JoinColumn(name = "coupon_id"),
+        inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
+    @Builder.Default
+    private List<Movie> applicableMovies = new ArrayList<>();
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
